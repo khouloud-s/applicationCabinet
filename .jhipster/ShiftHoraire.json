@@ -1,0 +1,43 @@
+{
+  "applications": ["Cabinet"],
+  "changelogDate": "20220520084544",
+  "clientRootFolder": "Cabinet",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "shifthoraire",
+  "fields": [
+    {
+      "fieldName": "userUuid",
+      "fieldType": "UUID",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "timeStart",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "timeEnd",
+      "fieldType": "ZonedDateTime"
+    }
+  ],
+  "fluentMethods": true,
+  "jpaMetamodelFiltering": true,
+  "microserviceName": "Cabinet",
+  "name": "ShiftHoraire",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "appointement",
+      "otherEntityRelationshipName": "shiftHoraire",
+      "relationshipName": "appointements",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "service": "serviceClass"
+}
