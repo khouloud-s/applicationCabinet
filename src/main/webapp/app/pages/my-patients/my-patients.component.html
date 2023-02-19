@@ -1,117 +1,116 @@
 <div>
-    <h2 id="page-heading" data-cy="AppointementHeading">
-      <span>Appointements</span>
-  
-      <div class="d-flex justify-content-end">
-        <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
-          <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-          <span>Refresh List</span>
-        </button>
-  
-        <button
-          id="jh-create-entity"
-          data-cy="entityCreateButton"
-          class="btn btn-primary jh-create-entity create-appointement"
-          [routerLink]="['/appointement/new']"
-        >
-          <fa-icon icon="plus"></fa-icon>
-          <span> Create a new Appointement </span>
-        </button>
-      </div>
-    </h2>
-  
-    <jhi-alert-error></jhi-alert-error>
-  
-    <jhi-alert></jhi-alert>
-  
-    <div class="alert alert-warning" id="no-result" *ngIf="appointements?.length === 0">
-      <span>No appointements found</span>
+  <h2 id="page-heading" data-cy="AppointementHeading">
+    <span>Appointements</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="MyPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span>Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-appointement"
+        [routerLink]="['/appointement/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span> Create a new Appointement </span>
+      </button>
     </div>
-  
-    <div class="table-responsive" id="entities" *ngIf="appointements && appointements.length > 0">
-      <table class="table table-striped" aria-describedby="page-heading">
-        <thead>
-          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-            <th scope="col" jhiSortBy="id"><span>Id</span> <fa-icon icon="sort"></fa-icon></th>
-            <th scope="col" jhiSortBy="date"><span>Date</span> <fa-icon icon="sort"></fa-icon></th>
-            <th scope="col" jhiSortBy="isActive"><span>Is Active</span> <fa-icon icon="sort"></fa-icon></th>
-            <th scope="col" jhiSortBy="medecin.id"><span>Medecin</span> <fa-icon icon="sort"></fa-icon></th>
-            <th scope="col" jhiSortBy="patient.id"><span>Patient</span> <fa-icon icon="sort"></fa-icon></th>
-            <th scope="col" jhiSortBy="shiftHoraire.id"><span>Shift Horaire</span> <fa-icon icon="sort"></fa-icon></th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let appointement of appointements; trackBy: trackId" data-cy="entityTable">
-            <td>
-              <a [routerLink]="['/appointement', appointement.id, 'view']">{{ appointement.id }}</a>
-            </td>
-            <td>{{ appointement.date | formatMediumDate }}</td>
-            <td>{{ appointement.isActive }}</td>
-            <td>
-              <div *ngIf="appointement.medecin">
-                <a [routerLink]="['/medecin', appointement.medecin?.id, 'view']">{{ appointement.medecin?.id }}</a>
-              </div>
-            </td>
-            <td>
-              <div *ngIf="appointement.patient">
-                <a [routerLink]="['/patient', appointement.patient?.id, 'view']">{{ appointement.patient?.id }}</a>
-              </div>
-            </td>
-            <td>
-              <div *ngIf="appointement.shiftHoraire">
-                <a [routerLink]="['/shift-horaire', appointement.shiftHoraire?.id, 'view']">{{ appointement.shiftHoraire?.id }}</a>
-              </div>
-            </td>
-            <td class="text-end">
-              <div class="btn-group">
-                <button
-                  type="submit"
-                  [routerLink]="['/appointement', appointement.id, 'view']"
-                  class="btn btn-info btn-sm"
-                  data-cy="entityDetailsButton"
-                >
-                  <fa-icon icon="eye"></fa-icon>
-                  <span class="d-none d-md-inline">View</span>
-                </button>
-  
-                <button
-                  type="submit"
-                  [routerLink]="['/appointement', appointement.id, 'edit']"
-                  class="btn btn-primary btn-sm"
-                  data-cy="entityEditButton"
-                >
-                  <fa-icon icon="pencil-alt"></fa-icon>
-                  <span class="d-none d-md-inline">Edit</span>
-                </button>
-  
-                <button type="submit" (click)="delete(appointement)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
-                  <fa-icon icon="times"></fa-icon>
-                  <span class="d-none d-md-inline">Delete</span>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="appointements?.length === 0">
+    <span>No appointements found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="appointements && appointements.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="MyPage()">
+          <th scope="col" jhiSortBy="id"><span>Id</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="date"><span>Date</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="isActive"><span>Is Active</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="medecin.id"><span>Medecin</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="patient.id"><span>Patient</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="shiftHoraire.id"><span>Shift Horaire</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appointement of appointements; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/appointement', appointement.id, 'view']">{{ appointement.id }}</a>
+          </td>
+          <td>{{ appointement.date | formatMediumDate }}</td>
+          <td>{{ appointement.isActive }}</td>
+          <td>
+            <div *ngIf="appointement.medecin">
+              <a [routerLink]="['/medecin', appointement.medecin?.id, 'view']">{{ appointement.medecin?.id }}</a>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="appointement.patient">
+              <a [routerLink]="['/patient', appointement.patient?.id, 'view']">{{ appointement.patient?.id }}</a>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="appointement.shiftHoraire">
+              <a [routerLink]="['/shift-horaire', appointement.shiftHoraire?.id, 'view']">{{ appointement.shiftHoraire?.id }}</a>
+            </div>
+          </td>
+          <td class="text-end">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/appointement', appointement.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/appointement', appointement.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(appointement)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="appointements && appointements.length > 0">
+    <div class="d-flex justify-content-center">
+      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
     </div>
-  
-    <div *ngIf="appointements && appointements.length > 0">
-      <div class="d-flex justify-content-center">
-        <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
-      </div>
-  
-      <div class="d-flex justify-content-center">
-        <ngb-pagination
-          [collectionSize]="totalItems"
-          [(page)]="ngbPaginationPage"
-          [pageSize]="itemsPerPage"
-          [maxSize]="5"
-          [rotate]="true"
-          [boundaryLinks]="true"
-          (pageChange)="loadPage($event)"
-        ></ngb-pagination>
-      </div>
+
+    <div class="d-flex justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="MyPage($event)"
+      ></ngb-pagination>
     </div>
   </div>
-  
+</div>

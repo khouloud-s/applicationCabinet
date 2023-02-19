@@ -32,6 +32,45 @@
           <label class="form-label" for="field_email">Email</label>
           <input type="text" class="form-control" name="email" id="field_email" data-cy="email" formControlName="email" />
         </div>
+
+        <div class="row mb-3">
+          <label class="form-label" for="field_scanOrdonnance">Scan Ordonnance</label>
+          <div>
+            <div *ngIf="editForm.get('scanOrdonnance')!.value" class="form-text text-danger clearfix">
+              <a
+                class="pull-start"
+                (click)="openFile(editForm.get('scanOrdonnance')!.value, editForm.get('scanOrdonnanceContentType')!.value)"
+                >open</a
+              ><br />
+              <span class="pull-start"
+                >{{ editForm.get('scanOrdonnanceContentType')!.value }}, {{ byteSize(editForm.get('scanOrdonnance')!.value) }}</span
+              >
+              <button
+                type="button"
+                (click)="editForm.patchValue({ scanOrdonnance: null }); editForm.patchValue({ scanOrdonnanceContentType: null })"
+                class="btn btn-secondary btn-xs pull-end"
+              >
+                <fa-icon icon="times"></fa-icon>
+              </button>
+            </div>
+            <input type="file" id="file_scanOrdonnance" data-cy="scanOrdonnance" (change)="setFileData($event, 'scanOrdonnance', false)" />
+          </div>
+          <input
+            type="hidden"
+            class="form-control"
+            name="scanOrdonnance"
+            id="field_scanOrdonnance"
+            data-cy="scanOrdonnance"
+            formControlName="scanOrdonnance"
+          />
+          <input
+            type="hidden"
+            class="form-control"
+            name="scanOrdonnanceContentType"
+            id="field_scanOrdonnanceContentType"
+            formControlName="scanOrdonnanceContentType"
+          />
+        </div>
       </div>
 
       <div>

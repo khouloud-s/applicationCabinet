@@ -23,6 +23,12 @@ import { NavbarComponent } from './layouts/navbar/navbar.component';
 import { FooterComponent } from './layouts/footer/footer.component';
 import { PageRibbonComponent } from './layouts/profiles/page-ribbon.component';
 import { ErrorComponent } from './layouts/error/error.component';
+import { AllPatientsComponent } from './pages/all-patients/all-patients.component';
+import { PatientComponent } from './entities/Cabinet/patient/list/patient.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { MyPatientsComponent } from './pages/my-patients/my-patients.component';
+import { SideBarComponent } from './layouts/side-bar/side-bar.component';
 
 @NgModule({
   imports: [
@@ -42,7 +48,18 @@ import { ErrorComponent } from './layouts/error/error.component';
     { provide: NgbDateAdapter, useClass: NgbDateDayjsAdapter },
     httpInterceptorProviders,
   ],
-  declarations: [MainComponent, NavbarComponent, ErrorComponent, PageRibbonComponent, FooterComponent],
+  declarations: [
+    MainComponent,
+    NavbarComponent,
+    ErrorComponent,
+    PageRibbonComponent,
+    FooterComponent,
+    AllPatientsComponent,
+    MyPatientsComponent,
+    DashboardComponent,
+    ProfileComponent,
+    SideBarComponent,
+  ],
   bootstrap: [MainComponent],
 })
 export class AppModule {

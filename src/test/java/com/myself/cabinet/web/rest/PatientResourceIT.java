@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
 
 /**
  * Integration tests for the {@link PatientResource} REST controller.
@@ -42,6 +43,11 @@ class PatientResourceIT {
 
     private static final String DEFAULT_EMAIL = "AAAAAAAAAA";
     private static final String UPDATED_EMAIL = "BBBBBBBBBB";
+
+    private static final byte[] DEFAULT_SCAN_ORDONNANCE = TestUtil.createByteArray(1, "0");
+    private static final byte[] UPDATED_SCAN_ORDONNANCE = TestUtil.createByteArray(1, "1");
+    private static final String DEFAULT_SCAN_ORDONNANCE_CONTENT_TYPE = "image/jpg";
+    private static final String UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE = "image/png";
 
     private static final String ENTITY_API_URL = "/api/patients";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -70,7 +76,12 @@ class PatientResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Patient createEntity(EntityManager em) {
-        Patient patient = new Patient().userUuid(DEFAULT_USER_UUID).fullName(DEFAULT_FULL_NAME).email(DEFAULT_EMAIL);
+        Patient patient = new Patient()
+            .userUuid(DEFAULT_USER_UUID)
+            .fullName(DEFAULT_FULL_NAME)
+            .email(DEFAULT_EMAIL)
+            .scanOrdonnance(DEFAULT_SCAN_ORDONNANCE)
+            .scanOrdonnanceContentType(DEFAULT_SCAN_ORDONNANCE_CONTENT_TYPE);
         return patient;
     }
 
@@ -81,7 +92,12 @@ class PatientResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Patient createUpdatedEntity(EntityManager em) {
-        Patient patient = new Patient().userUuid(UPDATED_USER_UUID).fullName(UPDATED_FULL_NAME).email(UPDATED_EMAIL);
+        Patient patient = new Patient()
+            .userUuid(UPDATED_USER_UUID)
+            .fullName(UPDATED_FULL_NAME)
+            .email(UPDATED_EMAIL)
+            .scanOrdonnance(UPDATED_SCAN_ORDONNANCE)
+            .scanOrdonnanceContentType(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
         return patient;
     }
 
@@ -107,6 +123,8 @@ class PatientResourceIT {
         assertThat(testPatient.getUserUuid()).isEqualTo(DEFAULT_USER_UUID);
         assertThat(testPatient.getFullName()).isEqualTo(DEFAULT_FULL_NAME);
         assertThat(testPatient.getEmail()).isEqualTo(DEFAULT_EMAIL);
+        assertThat(testPatient.getScanOrdonnance()).isEqualTo(DEFAULT_SCAN_ORDONNANCE);
+        assertThat(testPatient.getScanOrdonnanceContentType()).isEqualTo(DEFAULT_SCAN_ORDONNANCE_CONTENT_TYPE);
     }
 
     @Test
@@ -160,7 +178,9 @@ class PatientResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(patient.getId().intValue())))
             .andExpect(jsonPath("$.[*].userUuid").value(hasItem(DEFAULT_USER_UUID.toString())))
             .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME)))
-            .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)));
+            .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
+            .andExpect(jsonPath("$.[*].scanOrdonnanceContentType").value(hasItem(DEFAULT_SCAN_ORDONNANCE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].scanOrdonnance").value(hasItem(Base64Utils.encodeToString(DEFAULT_SCAN_ORDONNANCE))));
     }
 
     @Test
@@ -177,7 +197,9 @@ class PatientResourceIT {
             .andExpect(jsonPath("$.id").value(patient.getId().intValue()))
             .andExpect(jsonPath("$.userUuid").value(DEFAULT_USER_UUID.toString()))
             .andExpect(jsonPath("$.fullName").value(DEFAULT_FULL_NAME))
-            .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL));
+            .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
+            .andExpect(jsonPath("$.scanOrdonnanceContentType").value(DEFAULT_SCAN_ORDONNANCE_CONTENT_TYPE))
+            .andExpect(jsonPath("$.scanOrdonnance").value(Base64Utils.encodeToString(DEFAULT_SCAN_ORDONNANCE)));
     }
 
     @Test
@@ -443,7 +465,9 @@ class PatientResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(patient.getId().intValue())))
             .andExpect(jsonPath("$.[*].userUuid").value(hasItem(DEFAULT_USER_UUID.toString())))
             .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME)))
-            .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)));
+            .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
+            .andExpect(jsonPath("$.[*].scanOrdonnanceContentType").value(hasItem(DEFAULT_SCAN_ORDONNANCE_CONTENT_TYPE)))
+            .andExpect(jsonPath("$.[*].scanOrdonnance").value(hasItem(Base64Utils.encodeToString(DEFAULT_SCAN_ORDONNANCE))));
 
         // Check, that the count call also returns 1
         restPatientMockMvc
@@ -491,7 +515,12 @@ class PatientResourceIT {
         Patient updatedPatient = patientRepository.findById(patient.getId()).get();
         // Disconnect from session so that the updates on updatedPatient are not directly saved in db
         em.detach(updatedPatient);
-        updatedPatient.userUuid(UPDATED_USER_UUID).fullName(UPDATED_FULL_NAME).email(UPDATED_EMAIL);
+        updatedPatient
+            .userUuid(UPDATED_USER_UUID)
+            .fullName(UPDATED_FULL_NAME)
+            .email(UPDATED_EMAIL)
+            .scanOrdonnance(UPDATED_SCAN_ORDONNANCE)
+            .scanOrdonnanceContentType(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
         PatientDTO patientDTO = patientMapper.toDto(updatedPatient);
 
         restPatientMockMvc
@@ -509,6 +538,8 @@ class PatientResourceIT {
         assertThat(testPatient.getUserUuid()).isEqualTo(UPDATED_USER_UUID);
         assertThat(testPatient.getFullName()).isEqualTo(UPDATED_FULL_NAME);
         assertThat(testPatient.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testPatient.getScanOrdonnance()).isEqualTo(UPDATED_SCAN_ORDONNANCE);
+        assertThat(testPatient.getScanOrdonnanceContentType()).isEqualTo(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
     }
 
     @Test
@@ -588,7 +619,12 @@ class PatientResourceIT {
         Patient partialUpdatedPatient = new Patient();
         partialUpdatedPatient.setId(patient.getId());
 
-        partialUpdatedPatient.userUuid(UPDATED_USER_UUID).fullName(UPDATED_FULL_NAME).email(UPDATED_EMAIL);
+        partialUpdatedPatient
+            .userUuid(UPDATED_USER_UUID)
+            .fullName(UPDATED_FULL_NAME)
+            .email(UPDATED_EMAIL)
+            .scanOrdonnance(UPDATED_SCAN_ORDONNANCE)
+            .scanOrdonnanceContentType(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
 
         restPatientMockMvc
             .perform(
@@ -605,6 +641,8 @@ class PatientResourceIT {
         assertThat(testPatient.getUserUuid()).isEqualTo(UPDATED_USER_UUID);
         assertThat(testPatient.getFullName()).isEqualTo(UPDATED_FULL_NAME);
         assertThat(testPatient.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testPatient.getScanOrdonnance()).isEqualTo(UPDATED_SCAN_ORDONNANCE);
+        assertThat(testPatient.getScanOrdonnanceContentType()).isEqualTo(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
     }
 
     @Test
@@ -619,7 +657,12 @@ class PatientResourceIT {
         Patient partialUpdatedPatient = new Patient();
         partialUpdatedPatient.setId(patient.getId());
 
-        partialUpdatedPatient.userUuid(UPDATED_USER_UUID).fullName(UPDATED_FULL_NAME).email(UPDATED_EMAIL);
+        partialUpdatedPatient
+            .userUuid(UPDATED_USER_UUID)
+            .fullName(UPDATED_FULL_NAME)
+            .email(UPDATED_EMAIL)
+            .scanOrdonnance(UPDATED_SCAN_ORDONNANCE)
+            .scanOrdonnanceContentType(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
 
         restPatientMockMvc
             .perform(
@@ -636,6 +679,8 @@ class PatientResourceIT {
         assertThat(testPatient.getUserUuid()).isEqualTo(UPDATED_USER_UUID);
         assertThat(testPatient.getFullName()).isEqualTo(UPDATED_FULL_NAME);
         assertThat(testPatient.getEmail()).isEqualTo(UPDATED_EMAIL);
+        assertThat(testPatient.getScanOrdonnance()).isEqualTo(UPDATED_SCAN_ORDONNANCE);
+        assertThat(testPatient.getScanOrdonnanceContentType()).isEqualTo(UPDATED_SCAN_ORDONNANCE_CONTENT_TYPE);
     }
 
     @Test

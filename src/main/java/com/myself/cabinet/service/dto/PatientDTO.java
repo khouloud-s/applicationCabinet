@@ -3,6 +3,7 @@ package com.myself.cabinet.service.dto;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import javax.persistence.Lob;
 import javax.validation.constraints.*;
 
 /**
@@ -20,6 +21,11 @@ public class PatientDTO implements Serializable {
     private String fullName;
 
     private String email;
+
+    @Lob
+    private byte[] scanOrdonnance;
+
+    private String scanOrdonnanceContentType;
 
     public UUID getUserUuid() {
         return userUuid;
@@ -53,6 +59,22 @@ public class PatientDTO implements Serializable {
         this.email = email;
     }
 
+    public byte[] getScanOrdonnance() {
+        return scanOrdonnance;
+    }
+
+    public void setScanOrdonnance(byte[] scanOrdonnance) {
+        this.scanOrdonnance = scanOrdonnance;
+    }
+
+    public String getScanOrdonnanceContentType() {
+        return scanOrdonnanceContentType;
+    }
+
+    public void setScanOrdonnanceContentType(String scanOrdonnanceContentType) {
+        this.scanOrdonnanceContentType = scanOrdonnanceContentType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -82,6 +104,7 @@ public class PatientDTO implements Serializable {
             ", id=" + getId() +
             ", fullName='" + getFullName() + "'" +
             ", email='" + getEmail() + "'" +
+            ", scanOrdonnance='" + getScanOrdonnance() + "'" +
             "}";
     }
 }

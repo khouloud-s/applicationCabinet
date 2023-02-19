@@ -26,6 +26,13 @@
         <dd>
           <span>{{ patient.email }}</span>
         </dd>
+        <dt><span>Scan Ordonnance</span></dt>
+        <dd>
+          <div *ngIf="patient.scanOrdonnance">
+            <a (click)="openFile(patient.scanOrdonnance, patient.scanOrdonnanceContentType)">open</a>
+            {{ patient.scanOrdonnanceContentType }}, {{ byteSize(patient.scanOrdonnance) }}
+          </div>
+        </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">

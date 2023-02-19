@@ -9,6 +9,7 @@ import { IPatient } from '../patient.model';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/config/pagination.constants';
 import { PatientService } from '../service/patient.service';
 import { PatientDeleteDialogComponent } from '../delete/patient-delete-dialog.component';
+import { DataUtils } from 'app/core/util/data-util.service';
 
 @Component({
   selector: 'jhi-patient',
@@ -27,6 +28,7 @@ export class PatientComponent implements OnInit {
   constructor(
     protected patientService: PatientService,
     protected activatedRoute: ActivatedRoute,
+    protected dataUtils: DataUtils,
     protected router: Router,
     protected modalService: NgbModal
   ) {}
@@ -59,6 +61,14 @@ export class PatientComponent implements OnInit {
 
   trackId(_index: number, item: IPatient): number {
     return item.id!;
+  }
+
+  byteSize(base64String: string): string {
+    return this.dataUtils.byteSize(base64String);
+  }
+
+  openFile(base64String: string, contentType: string | null | undefined): void {
+    return this.dataUtils.openFile(base64String, contentType);
   }
 
   delete(patient: IPatient): void {

@@ -5,6 +5,8 @@ export interface IPatient {
   id?: number;
   fullName?: string | null;
   email?: string | null;
+  scanOrdonnanceContentType?: string | null;
+  scanOrdonnance?: string | null;
   appointements?: IAppointement[] | null;
 }
 
@@ -14,6 +16,8 @@ export class Patient implements IPatient {
     public id?: number,
     public fullName?: string | null,
     public email?: string | null,
+    public scanOrdonnanceContentType?: string | null,
+    public scanOrdonnance?: string | null,
     public appointements?: IAppointement[] | null
   ) {}
 }

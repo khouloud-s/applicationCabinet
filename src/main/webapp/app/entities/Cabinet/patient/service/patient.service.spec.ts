@@ -24,6 +24,8 @@ describe('Patient Service', () => {
       id: 0,
       fullName: 'AAAAAAA',
       email: 'AAAAAAA',
+      scanOrdonnanceContentType: 'image/png',
+      scanOrdonnance: 'AAAAAAA',
     };
   });
 
@@ -62,6 +64,7 @@ describe('Patient Service', () => {
           id: 1,
           fullName: 'BBBBBB',
           email: 'BBBBBB',
+          scanOrdonnance: 'BBBBBB',
         },
         elemDefault
       );
@@ -102,6 +105,7 @@ describe('Patient Service', () => {
           id: 1,
           fullName: 'BBBBBB',
           email: 'BBBBBB',
+          scanOrdonnance: 'BBBBBB',
         },
         elemDefault
       );
@@ -153,7 +157,7 @@ describe('Patient Service', () => {
       });
 
       it('should add only unique Patient to an array', () => {
-        const patientArray: IPatient[] = [{ id: 123 }, { id: 456 }, { id: 25651 }];
+        const patientArray: IPatient[] = [{ id: 123 }, { id: 456 }, { id: 29431 }];
         const patientCollection: IPatient[] = [{ id: 123 }];
         expectedResult = service.addPatientToCollectionIfMissing(patientCollection, ...patientArray);
         expect(expectedResult).toHaveLength(3);

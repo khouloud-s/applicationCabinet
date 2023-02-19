@@ -38,6 +38,13 @@ public class Patient implements Serializable {
     @Column(name = "email")
     private String email;
 
+    @Lob
+    @Column(name = "scan_ordonnance")
+    private byte[] scanOrdonnance;
+
+    @Column(name = "scan_ordonnance_content_type")
+    private String scanOrdonnanceContentType;
+
     @OneToMany(mappedBy = "patient")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "medecin", "patient", "shiftHoraire" }, allowSetters = true)
@@ -95,6 +102,32 @@ public class Patient implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public byte[] getScanOrdonnance() {
+        return this.scanOrdonnance;
+    }
+
+    public Patient scanOrdonnance(byte[] scanOrdonnance) {
+        this.setScanOrdonnance(scanOrdonnance);
+        return this;
+    }
+
+    public void setScanOrdonnance(byte[] scanOrdonnance) {
+        this.scanOrdonnance = scanOrdonnance;
+    }
+
+    public String getScanOrdonnanceContentType() {
+        return this.scanOrdonnanceContentType;
+    }
+
+    public Patient scanOrdonnanceContentType(String scanOrdonnanceContentType) {
+        this.scanOrdonnanceContentType = scanOrdonnanceContentType;
+        return this;
+    }
+
+    public void setScanOrdonnanceContentType(String scanOrdonnanceContentType) {
+        this.scanOrdonnanceContentType = scanOrdonnanceContentType;
     }
 
     public Set<Appointement> getAppointements() {
@@ -155,6 +188,8 @@ public class Patient implements Serializable {
             ", userUuid='" + getUserUuid() + "'" +
             ", fullName='" + getFullName() + "'" +
             ", email='" + getEmail() + "'" +
+            ", scanOrdonnance='" + getScanOrdonnance() + "'" +
+            ", scanOrdonnanceContentType='" + getScanOrdonnanceContentType() + "'" +
             "}";
     }
 }

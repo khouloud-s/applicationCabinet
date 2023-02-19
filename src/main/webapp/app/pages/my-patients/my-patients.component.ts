@@ -1,19 +1,18 @@
 import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/config/pagination.constants';
-import { combineLatest } from 'rxjs';
-import { IAppointement } from 'app/entities/Cabinet/appointement/appointement.model';
-import { AppointementService } from 'app/entities/Cabinet/appointement/service/appointement.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AppointementDeleteDialogComponent } from 'app/entities/Cabinet/appointement/delete/appointement-delete-dialog.component';
+import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/config/pagination.constants';
 import { AuthServerProvider } from 'app/core/auth/auth-jwt.service';
-
+import { IAppointement } from 'app/entities/Cabinet/appointement/appointement.model';
+import { AppointementDeleteDialogComponent } from 'app/entities/Cabinet/appointement/delete/appointement-delete-dialog.component';
+import { AppointementService } from 'app/entities/Cabinet/appointement/service/appointement.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'jhi-my-patients',
   templateUrl: './my-patients.component.html',
-  styleUrls: ['./my-patients.component.scss']
+  styleUrls: ['./my-patients.component.scss'],
 })
 export class MyPatientsComponent implements OnInit {
   appointements?: IAppointement[];
@@ -33,29 +32,31 @@ export class MyPatientsComponent implements OnInit {
     protected authServerProvider: AuthServerProvider
   ) {}
 
-  loadPage(page?: number, dontNavigate?: boolean): void {
+  MyPage(page?: number, dontNavigate?: boolean): void {
     this.isLoading = true;
     const criterias = [];
     const pageToLoad: number = page ?? this.page ?? 1;
-    if (this.authServerProvider.getToken()) {
-      criterias.push({ "key": 'token.equals', "value": this.authServerProvider.getToken() });
-    this.appointementService
-      .query({
-        page: pageToLoad - 1,
-        size: this.itemsPerPage,
-        sort: this.sort(),
-      })
-      .subscribe({
-        next: (res: HttpResponse<IAppointement[]>) => {
-          this.isLoading = false;
-          this.onSuccess(res.body, res.headers, pageToLoad, !dontNavigate);
-        },
-        error: () => {
-          this.isLoading = false;
-          this.onError();
-        },
-      });
-  }
+
+    if (this.authServerProvider.getUserUuid()) {
+      criterias.push({ key: 'userUuid.equals', value: this.authServerProvider.getUserUuid() });
+      this.appointementService
+        .query({
+          page: pageToLoad - 1,
+          size: this.itemsPerPage,
+          criteria: criterias,
+          sort: this.sort(),
+        })
+        .subscribe({
+          next: (res: HttpResponse<IAppointement[]>) => {
+            this.isLoading = false;
+            this.onSuccess(res.body, res.headers, pageToLoad, !dontNavigate);
+          },
+          error: () => {
+            this.isLoading = false;
+            this.onError();
+          },
+        });
+    }
   }
   ngOnInit(): void {
     this.handleNavigation();
@@ -71,7 +72,7 @@ export class MyPatientsComponent implements OnInit {
     // unsubscribe not needed because closed completes on modal close
     modalRef.closed.subscribe(reason => {
       if (reason === 'deleted') {
-        this.loadPage();
+        this.MyPage();
       }
     });
   }
@@ -94,7 +95,7 @@ export class MyPatientsComponent implements OnInit {
       if (pageNumber !== this.page || predicate !== this.predicate || ascending !== this.ascending) {
         this.predicate = predicate;
         this.ascending = ascending;
-        this.loadPage(pageNumber, true);
+        this.MyPage(pageNumber, true);
       }
     });
   }
@@ -119,4 +120,3 @@ export class MyPatientsComponent implements OnInit {
     this.ngbPaginationPage = this.page ?? 1;
   }
 }
-

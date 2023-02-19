@@ -32,6 +32,22 @@ import { UserRouteAccessService } from 'app/core/auth/user-route-access.service'
           path: '',
           loadChildren: () => import(`./entities/entity-routing.module`).then(m => m.EntityRoutingModule),
         },
+        {
+          path: 'profil',
+          loadChildren: () => import(`./pages/profile/route/profil-routing.module`).then(m => m.ProfilRoutingModule),
+        },
+        {
+          path: 'dashboard',
+          loadChildren: () => import(`./pages/dashboard/route/dashboard-routing.module`).then(m => m.DashboardRoutingModule),
+        },
+        {
+          path: 'all-patients',
+          loadChildren: () => import(`./pages/all-patients/route/all-patients-routing.module`).then(m => m.AllPatientRoutingModule),
+        },
+        {
+          path: 'my-patients',
+          loadChildren: () => import(`./pages/my-patients/route/my-patients-routing.module`).then(m => m.MyPatientRoutingModule),
+        },
         navbarRoute,
         ...errorRoute,
       ],

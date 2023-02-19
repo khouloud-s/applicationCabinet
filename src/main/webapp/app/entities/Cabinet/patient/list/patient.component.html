@@ -36,6 +36,7 @@
           <th scope="col" jhiSortBy="id"><span>Id</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" jhiSortBy="fullName"><span>Full Name</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col" jhiSortBy="email"><span>Email</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="scanOrdonnance"><span>Scan Ordonnance</span> <fa-icon icon="sort"></fa-icon></th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -47,6 +48,10 @@
           </td>
           <td>{{ patient.fullName }}</td>
           <td>{{ patient.email }}</td>
+          <td>
+            <a *ngIf="patient.scanOrdonnance" (click)="openFile(patient.scanOrdonnance, patient.scanOrdonnanceContentType)">open</a>
+            <span *ngIf="patient.scanOrdonnance">{{ patient.scanOrdonnanceContentType }}, {{ byteSize(patient.scanOrdonnance) }}</span>
+          </td>
           <td class="text-end">
             <div class="btn-group">
               <button

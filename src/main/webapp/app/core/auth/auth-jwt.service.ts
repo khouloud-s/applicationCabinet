@@ -26,6 +26,12 @@ export class AuthServerProvider {
     return tokenInLocalStorage ?? tokenInSessionStorage ?? '';
   }
 
+  getUserUuid(): string {
+    const userUuidInLocalStorage: string | null = this.localStorageService.retrieve('userUuid');
+    const userUuidInSessionStorage: string | null = this.sessionStorageService.retrieve('userUuid');
+    return userUuidInLocalStorage ?? userUuidInSessionStorage ?? '';
+  }
+
   login(credentials: Login): Observable<void> {
     return this.http
       .post<JwtToken>(this.applicationConfigService.getEndpointFor('api/authenticate'), credentials)
