@@ -5,7 +5,9 @@ import { Observable } from 'rxjs';
 import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IRole, getRoleIdentifier } from '../role.model';
+import { IRole, NewRole } from '../role.model';
+
+export type PartialUpdateRole = Partial<IRole> & Pick<IRole, 'id'>;
 
 export type EntityResponseType = HttpResponse<IRole>;
 export type EntityArrayResponseType = HttpResponse<IRole[]>;
@@ -16,16 +18,16 @@ export class RoleService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(role: IRole): Observable<EntityResponseType> {
+  create(role: NewRole): Observable<EntityResponseType> {
     return this.http.post<IRole>(this.resourceUrl, role, { observe: 'response' });
   }
 
   update(role: IRole): Observable<EntityResponseType> {
-    return this.http.put<IRole>(`${this.resourceUrl}/${getRoleIdentifier(role) as number}`, role, { observe: 'response' });
+    return this.http.put<IRole>(`${this.resourceUrl}/${this.getRoleIdentifier(role)}`, role, { observe: 'response' });
   }
 
-  partialUpdate(role: IRole): Observable<EntityResponseType> {
-    return this.http.patch<IRole>(`${this.resourceUrl}/${getRoleIdentifier(role) as number}`, role, { observe: 'response' });
+  partialUpdate(role: PartialUpdateRole): Observable<EntityResponseType> {
+    return this.http.patch<IRole>(`${this.resourceUrl}/${this.getRoleIdentifier(role)}`, role, { observe: 'response' });
   }
 
   find(id: number): Observable<EntityResponseType> {
@@ -41,13 +43,24 @@ export class RoleService {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addRoleToCollectionIfMissing(roleCollection: IRole[], ...rolesToCheck: (IRole | null | undefined)[]): IRole[] {
-    const roles: IRole[] = rolesToCheck.filter(isPresent);
+  getRoleIdentifier(role: Pick<IRole, 'id'>): number {
+    return role.id;
+  }
+
+  compareRole(o1: Pick<IRole, 'id'> | null, o2: Pick<IRole, 'id'> | null): boolean {
+    return o1 && o2 ? this.getRoleIdentifier(o1) === this.getRoleIdentifier(o2) : o1 === o2;
+  }
+
+  addRoleToCollectionIfMissing<Type extends Pick<IRole, 'id'>>(
+    roleCollection: Type[],
+    ...rolesToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const roles: Type[] = rolesToCheck.filter(isPresent);
     if (roles.length > 0) {
-      const roleCollectionIdentifiers = roleCollection.map(roleItem => getRoleIdentifier(roleItem)!);
+      const roleCollectionIdentifiers = roleCollection.map(roleItem => this.getRoleIdentifier(roleItem)!);
       const rolesToAdd = roles.filter(roleItem => {
-        const roleIdentifier = getRoleIdentifier(roleItem);
-        if (roleIdentifier == null || roleCollectionIdentifiers.includes(roleIdentifier)) {
+        const roleIdentifier = this.getRoleIdentifier(roleItem);
+        if (roleCollectionIdentifiers.includes(roleIdentifier)) {
           return false;
         }
         roleCollectionIdentifiers.push(roleIdentifier);

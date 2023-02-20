@@ -224,19 +224,6 @@ class AppointementResourceIT {
 
     @Test
     @Transactional
-    void getAllAppointementsByUserUuidIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        appointementRepository.saveAndFlush(appointement);
-
-        // Get all the appointementList where userUuid not equals to DEFAULT_USER_UUID
-        defaultAppointementShouldNotBeFound("userUuid.notEquals=" + DEFAULT_USER_UUID);
-
-        // Get all the appointementList where userUuid not equals to UPDATED_USER_UUID
-        defaultAppointementShouldBeFound("userUuid.notEquals=" + UPDATED_USER_UUID);
-    }
-
-    @Test
-    @Transactional
     void getAllAppointementsByUserUuidIsInShouldWork() throws Exception {
         // Initialize the database
         appointementRepository.saveAndFlush(appointement);
@@ -272,19 +259,6 @@ class AppointementResourceIT {
 
         // Get all the appointementList where date equals to UPDATED_DATE
         defaultAppointementShouldNotBeFound("date.equals=" + UPDATED_DATE);
-    }
-
-    @Test
-    @Transactional
-    void getAllAppointementsByDateIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        appointementRepository.saveAndFlush(appointement);
-
-        // Get all the appointementList where date not equals to DEFAULT_DATE
-        defaultAppointementShouldNotBeFound("date.notEquals=" + DEFAULT_DATE);
-
-        // Get all the appointementList where date not equals to UPDATED_DATE
-        defaultAppointementShouldBeFound("date.notEquals=" + UPDATED_DATE);
     }
 
     @Test
@@ -380,19 +354,6 @@ class AppointementResourceIT {
 
     @Test
     @Transactional
-    void getAllAppointementsByIsActiveIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        appointementRepository.saveAndFlush(appointement);
-
-        // Get all the appointementList where isActive not equals to DEFAULT_IS_ACTIVE
-        defaultAppointementShouldNotBeFound("isActive.notEquals=" + DEFAULT_IS_ACTIVE);
-
-        // Get all the appointementList where isActive not equals to UPDATED_IS_ACTIVE
-        defaultAppointementShouldBeFound("isActive.notEquals=" + UPDATED_IS_ACTIVE);
-    }
-
-    @Test
-    @Transactional
     void getAllAppointementsByIsActiveIsInShouldWork() throws Exception {
         // Initialize the database
         appointementRepository.saveAndFlush(appointement);
@@ -420,13 +381,10 @@ class AppointementResourceIT {
     @Test
     @Transactional
     void getAllAppointementsByMedecinIsEqualToSomething() throws Exception {
-        // Initialize the database
-        appointementRepository.saveAndFlush(appointement);
         Medecin medecin;
         if (TestUtil.findAll(em, Medecin.class).isEmpty()) {
+            appointementRepository.saveAndFlush(appointement);
             medecin = MedecinResourceIT.createEntity(em);
-            em.persist(medecin);
-            em.flush();
         } else {
             medecin = TestUtil.findAll(em, Medecin.class).get(0);
         }
@@ -446,13 +404,10 @@ class AppointementResourceIT {
     @Test
     @Transactional
     void getAllAppointementsByPatientIsEqualToSomething() throws Exception {
-        // Initialize the database
-        appointementRepository.saveAndFlush(appointement);
         Patient patient;
         if (TestUtil.findAll(em, Patient.class).isEmpty()) {
+            appointementRepository.saveAndFlush(appointement);
             patient = PatientResourceIT.createEntity(em);
-            em.persist(patient);
-            em.flush();
         } else {
             patient = TestUtil.findAll(em, Patient.class).get(0);
         }
@@ -472,13 +427,10 @@ class AppointementResourceIT {
     @Test
     @Transactional
     void getAllAppointementsByShiftHoraireIsEqualToSomething() throws Exception {
-        // Initialize the database
-        appointementRepository.saveAndFlush(appointement);
         ShiftHoraire shiftHoraire;
         if (TestUtil.findAll(em, ShiftHoraire.class).isEmpty()) {
+            appointementRepository.saveAndFlush(appointement);
             shiftHoraire = ShiftHoraireResourceIT.createEntity(em);
-            em.persist(shiftHoraire);
-            em.flush();
         } else {
             shiftHoraire = TestUtil.findAll(em, ShiftHoraire.class).get(0);
         }
@@ -544,7 +496,7 @@ class AppointementResourceIT {
 
     @Test
     @Transactional
-    void putNewAppointement() throws Exception {
+    void putExistingAppointement() throws Exception {
         // Initialize the database
         appointementRepository.saveAndFlush(appointement);
 

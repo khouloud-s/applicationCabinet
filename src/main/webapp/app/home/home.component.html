@@ -4,36 +4,37 @@
   </div>
 
   <div class="col-md-9">
-    <h1 class="display-4"><span>Welcome, Java Hipster!</span> (Cabinet)</h1>
+    <h1 class="display-4"><span>Bienvenue, Java Hipster !</span> (Cabinet)</h1>
 
-    <p class="lead">This is your homepage</p>
+    <p class="lead">Ceci est votre page d'accueil</p>
 
     <div [ngSwitch]="account !== null">
       <div class="alert alert-success" *ngSwitchCase="true">
-        <span id="home-logged-message" *ngIf="account">You are logged in as user "{{ account.login }}".</span>
+        <span id="home-logged-message" *ngIf="account">Vous êtes connecté en tant que "{{ account.login }}".</span>
       </div>
 
       <div class="alert alert-warning" *ngSwitchCase="false">
-        <span>If you want to </span>
-        <a class="alert-link" (click)="login()">sign in</a
+        <span>Si vous voulez vous </span>
+        <a class="alert-link" (click)="login()">connecter</a
         ><span
-          >, you can try the default accounts:<br />- Administrator (login="admin" and password="admin") <br />- User (login="user" and
-          password="user").</span
+          >, vous pouvez utiliser les comptes par défaut : <br />
+          - Administrateur (nom d'utilisateur="admin" et mot de passe ="admin") <br />
+          - Utilisateur (nom d'utilisateur="user" et mot de passe ="user").</span
         >
       </div>
 
       <div class="alert alert-warning" *ngSwitchCase="false">
-        <span>You don't have an account yet?</span>&nbsp;
-        <a class="alert-link" routerLink="account/register">Register a new account</a>
+        <span>Vous n'avez pas encore de compte ?</span>&nbsp;
+        <a class="alert-link" routerLink="account/register">Créer un compte</a>
       </div>
     </div>
 
-    <p>If you have any question on JHipster:</p>
+    <p>Si vous avez des questions à propos de JHipster :</p>
 
     <ul>
-      <li><a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">JHipster homepage</a></li>
+      <li><a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">Page d'accueil de JHipster</a></li>
       <li>
-        <a href="https://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">JHipster on Stack Overflow</a>
+        <a href="https://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">JHipster sur Stack Overflow</a>
       </li>
       <li>
         <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer"
@@ -43,12 +44,12 @@
       <li>
         <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">JHipster public chat room</a>
       </li>
-      <li><a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer">follow @jhipster on Twitter</a></li>
+      <li><a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer">Suivez @jhipster sur Twitter</a></li>
     </ul>
 
     <p>
-      <span>If you like JHipster, don't forget to give us a star on</span>
-      <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">GitHub</a>!
+      <span>Si vous aimez JHipster, donnez nous une étoile sur</span>
+      <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">GitHub </a>!
     </p>
   </div>
 </div>

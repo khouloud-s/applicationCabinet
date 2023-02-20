@@ -6,8 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { PatientFormService } from './patient-form.service';
 import { PatientService } from '../service/patient.service';
-import { IPatient, Patient } from '../patient.model';
+import { IPatient } from '../patient.model';
 
 import { PatientUpdateComponent } from './patient-update.component';
 
@@ -15,6 +16,7 @@ describe('Patient Management Update Component', () => {
   let comp: PatientUpdateComponent;
   let fixture: ComponentFixture<PatientUpdateComponent>;
   let activatedRoute: ActivatedRoute;
+  let patientFormService: PatientFormService;
   let patientService: PatientService;
 
   beforeEach(() => {
@@ -36,6 +38,7 @@ describe('Patient Management Update Component', () => {
 
     fixture = TestBed.createComponent(PatientUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    patientFormService = TestBed.inject(PatientFormService);
     patientService = TestBed.inject(PatientService);
 
     comp = fixture.componentInstance;
@@ -48,15 +51,16 @@ describe('Patient Management Update Component', () => {
       activatedRoute.data = of({ patient });
       comp.ngOnInit();
 
-      expect(comp.editForm.value).toEqual(expect.objectContaining(patient));
+      expect(comp.patient).toEqual(patient);
     });
   });
 
   describe('save', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Patient>>();
+      const saveSubject = new Subject<HttpResponse<IPatient>>();
       const patient = { id: 123 };
+      jest.spyOn(patientFormService, 'getPatient').mockReturnValue(patient);
       jest.spyOn(patientService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ patient });
@@ -69,18 +73,20 @@ describe('Patient Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
+      expect(patientFormService.getPatient).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
-      expect(patientService.update).toHaveBeenCalledWith(patient);
+      expect(patientService.update).toHaveBeenCalledWith(expect.objectContaining(patient));
       expect(comp.isSaving).toEqual(false);
     });
 
     it('Should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Patient>>();
-      const patient = new Patient();
+      const saveSubject = new Subject<HttpResponse<IPatient>>();
+      const patient = { id: 123 };
+      jest.spyOn(patientFormService, 'getPatient').mockReturnValue({ id: null });
       jest.spyOn(patientService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
-      activatedRoute.data = of({ patient });
+      activatedRoute.data = of({ patient: null });
       comp.ngOnInit();
 
       // WHEN
@@ -90,14 +96,15 @@ describe('Patient Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(patientService.create).toHaveBeenCalledWith(patient);
+      expect(patientFormService.getPatient).toHaveBeenCalled();
+      expect(patientService.create).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('Should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Patient>>();
+      const saveSubject = new Subject<HttpResponse<IPatient>>();
       const patient = { id: 123 };
       jest.spyOn(patientService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -110,7 +117,7 @@ describe('Patient Management Update Component', () => {
       saveSubject.error('This is an error!');
 
       // THEN
-      expect(patientService.update).toHaveBeenCalledWith(patient);
+      expect(patientService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });

@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IShiftHoraire } from '../shift-horaire.model';
 import { ShiftHoraireService } from '../service/shift-horaire.service';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   templateUrl: './shift-horaire-delete-dialog.component.html',
@@ -18,7 +19,7 @@ export class ShiftHoraireDeleteDialogComponent {
 
   confirmDelete(id: number): void {
     this.shiftHoraireService.delete(id).subscribe(() => {
-      this.activeModal.close('deleted');
+      this.activeModal.close(ITEM_DELETED_EVENT);
     });
   }
 }

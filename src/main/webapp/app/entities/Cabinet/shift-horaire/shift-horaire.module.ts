@@ -9,6 +9,5 @@ import { ShiftHoraireRoutingModule } from './route/shift-horaire-routing.module'
 @NgModule({
   imports: [SharedModule, ShiftHoraireRoutingModule],
   declarations: [ShiftHoraireComponent, ShiftHoraireDetailComponent, ShiftHoraireUpdateComponent, ShiftHoraireDeleteDialogComponent],
-  entryComponents: [ShiftHoraireDeleteDialogComponent],
 })
 export class CabinetShiftHoraireModule {}

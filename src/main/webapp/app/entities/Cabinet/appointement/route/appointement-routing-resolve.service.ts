@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IAppointement, Appointement } from '../appointement.model';
+import { IAppointement } from '../appointement.model';
 import { AppointementService } from '../service/appointement.service';
 
 @Injectable({ providedIn: 'root' })
-export class AppointementRoutingResolveService implements Resolve<IAppointement> {
+export class AppointementRoutingResolveService implements Resolve<IAppointement | null> {
   constructor(protected service: AppointementService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IAppointement> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IAppointement | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((appointement: HttpResponse<Appointement>) => {
+        mergeMap((appointement: HttpResponse<IAppointement>) => {
           if (appointement.body) {
             return of(appointement.body);
           } else {
@@ -25,6 +25,6 @@ export class AppointementRoutingResolveService implements Resolve<IAppointement>
         })
       );
     }
-    return of(new Appointement());
+    return of(null);
   }
 }

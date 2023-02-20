@@ -50,7 +50,7 @@ public class ShiftHoraireService {
      * @return the persisted entity.
      */
     public ShiftHoraireDTO update(ShiftHoraireDTO shiftHoraireDTO) {
-        log.debug("Request to save ShiftHoraire : {}", shiftHoraireDTO);
+        log.debug("Request to update ShiftHoraire : {}", shiftHoraireDTO);
         ShiftHoraire shiftHoraire = shiftHoraireMapper.toEntity(shiftHoraireDTO);
         shiftHoraire = shiftHoraireRepository.save(shiftHoraire);
         return shiftHoraireMapper.toDto(shiftHoraire);

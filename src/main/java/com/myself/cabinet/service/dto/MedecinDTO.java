@@ -8,6 +8,7 @@ import javax.validation.constraints.*;
 /**
  * A DTO for the {@link com.myself.cabinet.domain.Medecin} entity.
  */
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class MedecinDTO implements Serializable {
 
     @NotNull

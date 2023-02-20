@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { IShiftHoraire, ShiftHoraire } from '../shift-horaire.model';
+import { IShiftHoraire } from '../shift-horaire.model';
 import { ShiftHoraireService } from '../service/shift-horaire.service';
 
 import { ShiftHoraireRoutingResolveService } from './shift-horaire-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('ShiftHoraire routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: ShiftHoraireRoutingResolveService;
   let service: ShiftHoraireService;
-  let resultShiftHoraire: IShiftHoraire | undefined;
+  let resultShiftHoraire: IShiftHoraire | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('ShiftHoraire routing resolve service', () => {
       expect(resultShiftHoraire).toEqual({ id: 123 });
     });
 
-    it('should return new IShiftHoraire if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('ShiftHoraire routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultShiftHoraire).toEqual(new ShiftHoraire());
+      expect(resultShiftHoraire).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as ShiftHoraire })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IShiftHoraire>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: 123 };
 
       // WHEN

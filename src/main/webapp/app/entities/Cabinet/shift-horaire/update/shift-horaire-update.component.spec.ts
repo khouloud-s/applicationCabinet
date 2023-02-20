@@ -6,8 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { ShiftHoraireFormService } from './shift-horaire-form.service';
 import { ShiftHoraireService } from '../service/shift-horaire.service';
-import { IShiftHoraire, ShiftHoraire } from '../shift-horaire.model';
+import { IShiftHoraire } from '../shift-horaire.model';
 
 import { ShiftHoraireUpdateComponent } from './shift-horaire-update.component';
 
@@ -15,6 +16,7 @@ describe('ShiftHoraire Management Update Component', () => {
   let comp: ShiftHoraireUpdateComponent;
   let fixture: ComponentFixture<ShiftHoraireUpdateComponent>;
   let activatedRoute: ActivatedRoute;
+  let shiftHoraireFormService: ShiftHoraireFormService;
   let shiftHoraireService: ShiftHoraireService;
 
   beforeEach(() => {
@@ -36,6 +38,7 @@ describe('ShiftHoraire Management Update Component', () => {
 
     fixture = TestBed.createComponent(ShiftHoraireUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    shiftHoraireFormService = TestBed.inject(ShiftHoraireFormService);
     shiftHoraireService = TestBed.inject(ShiftHoraireService);
 
     comp = fixture.componentInstance;
@@ -48,15 +51,16 @@ describe('ShiftHoraire Management Update Component', () => {
       activatedRoute.data = of({ shiftHoraire });
       comp.ngOnInit();
 
-      expect(comp.editForm.value).toEqual(expect.objectContaining(shiftHoraire));
+      expect(comp.shiftHoraire).toEqual(shiftHoraire);
     });
   });
 
   describe('save', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<ShiftHoraire>>();
+      const saveSubject = new Subject<HttpResponse<IShiftHoraire>>();
       const shiftHoraire = { id: 123 };
+      jest.spyOn(shiftHoraireFormService, 'getShiftHoraire').mockReturnValue(shiftHoraire);
       jest.spyOn(shiftHoraireService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ shiftHoraire });
@@ -69,18 +73,20 @@ describe('ShiftHoraire Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
+      expect(shiftHoraireFormService.getShiftHoraire).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
-      expect(shiftHoraireService.update).toHaveBeenCalledWith(shiftHoraire);
+      expect(shiftHoraireService.update).toHaveBeenCalledWith(expect.objectContaining(shiftHoraire));
       expect(comp.isSaving).toEqual(false);
     });
 
     it('Should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<ShiftHoraire>>();
-      const shiftHoraire = new ShiftHoraire();
+      const saveSubject = new Subject<HttpResponse<IShiftHoraire>>();
+      const shiftHoraire = { id: 123 };
+      jest.spyOn(shiftHoraireFormService, 'getShiftHoraire').mockReturnValue({ id: null });
       jest.spyOn(shiftHoraireService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
-      activatedRoute.data = of({ shiftHoraire });
+      activatedRoute.data = of({ shiftHoraire: null });
       comp.ngOnInit();
 
       // WHEN
@@ -90,14 +96,15 @@ describe('ShiftHoraire Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(shiftHoraireService.create).toHaveBeenCalledWith(shiftHoraire);
+      expect(shiftHoraireFormService.getShiftHoraire).toHaveBeenCalled();
+      expect(shiftHoraireService.create).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('Should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<ShiftHoraire>>();
+      const saveSubject = new Subject<HttpResponse<IShiftHoraire>>();
       const shiftHoraire = { id: 123 };
       jest.spyOn(shiftHoraireService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -110,7 +117,7 @@ describe('ShiftHoraire Management Update Component', () => {
       saveSubject.error('This is an error!');
 
       // THEN
-      expect(shiftHoraireService.update).toHaveBeenCalledWith(shiftHoraire);
+      expect(shiftHoraireService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });

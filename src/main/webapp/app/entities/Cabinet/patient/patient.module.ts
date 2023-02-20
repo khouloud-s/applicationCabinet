@@ -9,6 +9,5 @@ import { PatientRoutingModule } from './route/patient-routing.module';
 @NgModule({
   imports: [SharedModule, PatientRoutingModule],
   declarations: [PatientComponent, PatientDetailComponent, PatientUpdateComponent, PatientDeleteDialogComponent],
-  entryComponents: [PatientDeleteDialogComponent],
 })
 export class CabinetPatientModule {}

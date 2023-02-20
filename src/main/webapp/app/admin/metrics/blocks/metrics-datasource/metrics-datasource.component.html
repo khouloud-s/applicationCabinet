@@ -1,15 +1,15 @@
-<h3 id="datasourceMetrics">DataSource statistics (time in millisecond)</h3>
+<h3 id="datasourceMetrics">Statistiques du pool de connexions (temps en millisecondes)</h3>
 
 <div class="table-responsive" *ngIf="!updating && datasourceMetrics">
   <table class="table table-striped" aria-describedby="datasourceMetrics">
     <thead>
       <tr>
         <th scope="col">
-          <span>Connection Pool Usage</span> (active: {{ datasourceMetrics.active.value }}, min: {{ datasourceMetrics.min.value }}, max:
-          {{ datasourceMetrics.max.value }}, idle: {{ datasourceMetrics.idle.value }})
+          <span>Usage du Pool de connexion</span> (active: {{ datasourceMetrics.active.value }}, min: {{ datasourceMetrics.min.value }},
+          max: {{ datasourceMetrics.max.value }}, idle: {{ datasourceMetrics.idle.value }})
         </th>
-        <th scope="col" class="text-end">Count</th>
-        <th scope="col" class="text-end">Mean</th>
+        <th scope="col" class="text-end">Total</th>
+        <th scope="col" class="text-end">Médian</th>
         <th scope="col" class="text-end">Min</th>
         <th scope="col" class="text-end">p50</th>
         <th scope="col" class="text-end">p75</th>

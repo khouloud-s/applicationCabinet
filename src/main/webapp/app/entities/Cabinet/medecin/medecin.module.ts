@@ -9,6 +9,5 @@ import { MedecinRoutingModule } from './route/medecin-routing.module';
 @NgModule({
   imports: [SharedModule, MedecinRoutingModule],
   declarations: [MedecinComponent, MedecinDetailComponent, MedecinUpdateComponent, MedecinDeleteDialogComponent],
-  entryComponents: [MedecinDeleteDialogComponent],
 })
 export class CabinetMedecinModule {}

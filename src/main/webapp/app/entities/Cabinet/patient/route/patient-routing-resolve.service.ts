@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IPatient, Patient } from '../patient.model';
+import { IPatient } from '../patient.model';
 import { PatientService } from '../service/patient.service';
 
 @Injectable({ providedIn: 'root' })
-export class PatientRoutingResolveService implements Resolve<IPatient> {
+export class PatientRoutingResolveService implements Resolve<IPatient | null> {
   constructor(protected service: PatientService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IPatient> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IPatient | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((patient: HttpResponse<Patient>) => {
+        mergeMap((patient: HttpResponse<IPatient>) => {
           if (patient.body) {
             return of(patient.body);
           } else {
@@ -25,6 +25,6 @@ export class PatientRoutingResolveService implements Resolve<IPatient> {
         })
       );
     }
-    return of(new Patient());
+    return of(null);
   }
 }

@@ -9,6 +9,7 @@ import javax.validation.constraints.*;
 /**
  * A DTO for the {@link com.myself.cabinet.domain.Role} entity.
  */
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class RoleDTO implements Serializable {
 
     @NotNull

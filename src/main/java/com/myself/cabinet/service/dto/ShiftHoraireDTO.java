@@ -9,6 +9,7 @@ import javax.validation.constraints.*;
 /**
  * A DTO for the {@link com.myself.cabinet.domain.ShiftHoraire} entity.
  */
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class ShiftHoraireDTO implements Serializable {
 
     @NotNull

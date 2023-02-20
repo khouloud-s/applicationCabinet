@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { IAppointement, Appointement } from '../appointement.model';
+import { AppointementFormService, AppointementFormGroup } from './appointement-form.service';
+import { IAppointement } from '../appointement.model';
 import { AppointementService } from '../service/appointement.service';
 import { IMedecin } from 'app/entities/Cabinet/medecin/medecin.model';
 import { MedecinService } from 'app/entities/Cabinet/medecin/service/medecin.service';
@@ -20,33 +20,36 @@ import { ShiftHoraireService } from 'app/entities/Cabinet/shift-horaire/service/
 })
 export class AppointementUpdateComponent implements OnInit {
   isSaving = false;
+  appointement: IAppointement | null = null;
 
   medecinsSharedCollection: IMedecin[] = [];
   patientsSharedCollection: IPatient[] = [];
   shiftHorairesSharedCollection: IShiftHoraire[] = [];
 
-  editForm = this.fb.group({
-    userUuid: [null, [Validators.required]],
-    id: [],
-    date: [],
-    isActive: [],
-    medecin: [],
-    patient: [],
-    shiftHoraire: [],
-  });
+  editForm: AppointementFormGroup = this.appointementFormService.createAppointementFormGroup();
 
   constructor(
     protected appointementService: AppointementService,
+    protected appointementFormService: AppointementFormService,
     protected medecinService: MedecinService,
     protected patientService: PatientService,
     protected shiftHoraireService: ShiftHoraireService,
-    protected activatedRoute: ActivatedRoute,
-    protected fb: FormBuilder
+    protected activatedRoute: ActivatedRoute
   ) {}
+
+  compareMedecin = (o1: IMedecin | null, o2: IMedecin | null): boolean => this.medecinService.compareMedecin(o1, o2);
+
+  comparePatient = (o1: IPatient | null, o2: IPatient | null): boolean => this.patientService.comparePatient(o1, o2);
+
+  compareShiftHoraire = (o1: IShiftHoraire | null, o2: IShiftHoraire | null): boolean =>
+    this.shiftHoraireService.compareShiftHoraire(o1, o2);
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ appointement }) => {
-      this.updateForm(appointement);
+      this.appointement = appointement;
+      if (appointement) {
+        this.updateForm(appointement);
+      }
 
       this.loadRelationshipsOptions();
     });
@@ -58,24 +61,12 @@ export class AppointementUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const appointement = this.createFromForm();
-    if (appointement.id !== undefined) {
+    const appointement = this.appointementFormService.getAppointement(this.editForm);
+    if (appointement.id !== null) {
       this.subscribeToSaveResponse(this.appointementService.update(appointement));
     } else {
       this.subscribeToSaveResponse(this.appointementService.create(appointement));
     }
-  }
-
-  trackMedecinById(_index: number, item: IMedecin): number {
-    return item.id!;
-  }
-
-  trackPatientById(_index: number, item: IPatient): number {
-    return item.id!;
-  }
-
-  trackShiftHoraireById(_index: number, item: IShiftHoraire): number {
-    return item.id!;
   }
 
   protected subscribeToSaveResponse(result: Observable<HttpResponse<IAppointement>>): void {
@@ -98,25 +89,18 @@ export class AppointementUpdateComponent implements OnInit {
   }
 
   protected updateForm(appointement: IAppointement): void {
-    this.editForm.patchValue({
-      userUuid: appointement.userUuid,
-      id: appointement.id,
-      date: appointement.date,
-      isActive: appointement.isActive,
-      medecin: appointement.medecin,
-      patient: appointement.patient,
-      shiftHoraire: appointement.shiftHoraire,
-    });
+    this.appointement = appointement;
+    this.appointementFormService.resetForm(this.editForm, appointement);
 
-    this.medecinsSharedCollection = this.medecinService.addMedecinToCollectionIfMissing(
+    this.medecinsSharedCollection = this.medecinService.addMedecinToCollectionIfMissing<IMedecin>(
       this.medecinsSharedCollection,
       appointement.medecin
     );
-    this.patientsSharedCollection = this.patientService.addPatientToCollectionIfMissing(
+    this.patientsSharedCollection = this.patientService.addPatientToCollectionIfMissing<IPatient>(
       this.patientsSharedCollection,
       appointement.patient
     );
-    this.shiftHorairesSharedCollection = this.shiftHoraireService.addShiftHoraireToCollectionIfMissing(
+    this.shiftHorairesSharedCollection = this.shiftHoraireService.addShiftHoraireToCollectionIfMissing<IShiftHoraire>(
       this.shiftHorairesSharedCollection,
       appointement.shiftHoraire
     );
@@ -127,7 +111,7 @@ export class AppointementUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IMedecin[]>) => res.body ?? []))
       .pipe(
-        map((medecins: IMedecin[]) => this.medecinService.addMedecinToCollectionIfMissing(medecins, this.editForm.get('medecin')!.value))
+        map((medecins: IMedecin[]) => this.medecinService.addMedecinToCollectionIfMissing<IMedecin>(medecins, this.appointement?.medecin))
       )
       .subscribe((medecins: IMedecin[]) => (this.medecinsSharedCollection = medecins));
 
@@ -135,7 +119,7 @@ export class AppointementUpdateComponent implements OnInit {
       .query()
       .pipe(map((res: HttpResponse<IPatient[]>) => res.body ?? []))
       .pipe(
-        map((patients: IPatient[]) => this.patientService.addPatientToCollectionIfMissing(patients, this.editForm.get('patient')!.value))
+        map((patients: IPatient[]) => this.patientService.addPatientToCollectionIfMissing<IPatient>(patients, this.appointement?.patient))
       )
       .subscribe((patients: IPatient[]) => (this.patientsSharedCollection = patients));
 
@@ -144,22 +128,9 @@ export class AppointementUpdateComponent implements OnInit {
       .pipe(map((res: HttpResponse<IShiftHoraire[]>) => res.body ?? []))
       .pipe(
         map((shiftHoraires: IShiftHoraire[]) =>
-          this.shiftHoraireService.addShiftHoraireToCollectionIfMissing(shiftHoraires, this.editForm.get('shiftHoraire')!.value)
+          this.shiftHoraireService.addShiftHoraireToCollectionIfMissing<IShiftHoraire>(shiftHoraires, this.appointement?.shiftHoraire)
         )
       )
       .subscribe((shiftHoraires: IShiftHoraire[]) => (this.shiftHorairesSharedCollection = shiftHoraires));
-  }
-
-  protected createFromForm(): IAppointement {
-    return {
-      ...new Appointement(),
-      userUuid: this.editForm.get(['userUuid'])!.value,
-      id: this.editForm.get(['id'])!.value,
-      date: this.editForm.get(['date'])!.value,
-      isActive: this.editForm.get(['isActive'])!.value,
-      medecin: this.editForm.get(['medecin'])!.value,
-      patient: this.editForm.get(['patient'])!.value,
-      shiftHoraire: this.editForm.get(['shiftHoraire'])!.value,
-    };
   }
 }

@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-patient-heading" data-cy="PatientCreateUpdateHeading">Create or edit a Patient</h2>
+      <h2 id="jhi-patient-heading" data-cy="PatientCreateUpdateHeading">Créer ou éditer un Patient</h2>
 
       <div>
         <jhi-alert-error></jhi-alert-error>
@@ -10,11 +10,11 @@
           <label class="form-label" for="field_userUuid">User Uuid</label>
           <input type="text" class="form-control" name="userUuid" id="field_userUuid" data-cy="userUuid" formControlName="userUuid" />
           <div *ngIf="editForm.get('userUuid')!.invalid && (editForm.get('userUuid')!.dirty || editForm.get('userUuid')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('userUuid')?.errors?.required"> This field is required. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('userUuid')?.errors?.required"> Ce champ est obligatoire. </small>
           </div>
         </div>
 
-        <div class="row mb-3" [hidden]="editForm.get('id')!.value == null">
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
           <label class="form-label" for="field_id">Id</label>
           <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
@@ -23,8 +23,8 @@
           <label class="form-label" for="field_fullName">Full Name</label>
           <input type="text" class="form-control" name="fullName" id="field_fullName" data-cy="fullName" formControlName="fullName" />
           <div *ngIf="editForm.get('fullName')!.invalid && (editForm.get('fullName')!.dirty || editForm.get('fullName')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('fullName')?.errors?.min"> This field should be at least 5. </small>
-            <small class="form-text text-danger" *ngIf="editForm.get('fullName')?.errors?.max"> This field cannot be more than 30. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('fullName')?.errors?.min"> Ce champ doit être supérieur à 5. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('fullName')?.errors?.max"> Ce champ doit être inférieur à 30. </small>
           </div>
         </div>
 
@@ -39,15 +39,15 @@
             <div *ngIf="editForm.get('scanOrdonnance')!.value" class="form-text text-danger clearfix">
               <a
                 class="pull-start"
-                (click)="openFile(editForm.get('scanOrdonnance')!.value, editForm.get('scanOrdonnanceContentType')!.value)"
-                >open</a
+                (click)="openFile(editForm.get('scanOrdonnance')!.value!, editForm.get('scanOrdonnanceContentType')!.value!)"
+                >Ouvrir</a
               ><br />
               <span class="pull-start"
-                >{{ editForm.get('scanOrdonnanceContentType')!.value }}, {{ byteSize(editForm.get('scanOrdonnance')!.value) }}</span
+                >{{ editForm.get('scanOrdonnanceContentType')!.value }}, {{ byteSize(editForm.get('scanOrdonnance')!.value!) }}</span
               >
               <button
                 type="button"
-                (click)="editForm.patchValue({ scanOrdonnance: null }); editForm.patchValue({ scanOrdonnanceContentType: null })"
+                (click)="editForm.patchValue({ scanOrdonnance: undefined, scanOrdonnanceContentType: undefined })"
                 class="btn btn-secondary btn-xs pull-end"
               >
                 <fa-icon icon="times"></fa-icon>
@@ -75,7 +75,7 @@
 
       <div>
         <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Annuler</span>
         </button>
 
         <button
@@ -85,7 +85,7 @@
           [disabled]="editForm.invalid || isSaving"
           class="btn btn-primary"
         >
-          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Sauvegarder</span>
         </button>
       </div>
     </form>
