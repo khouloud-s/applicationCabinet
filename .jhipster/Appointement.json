@@ -1,0 +1,56 @@
+{
+  "applications": ["Cabinet"],
+  "changelogDate": "20220520084444",
+  "clientRootFolder": "Cabinet",
+  "databaseType": "sql",
+  "dto": "mapstruct",
+  "embedded": false,
+  "entityTableName": "appointement",
+  "fields": [
+    {
+      "fieldName": "userUuid",
+      "fieldType": "UUID",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean"
+    }
+  ],
+  "fluentMethods": true,
+  "javadoc": "Cabinet",
+  "jpaMetamodelFiltering": true,
+  "microserviceName": "Cabinet",
+  "name": "Appointement",
+  "pagination": "pagination",
+  "readOnly": false,
+  "relationships": [
+    {
+      "otherEntityName": "medecin",
+      "otherEntityRelationshipName": "appointements",
+      "relationshipName": "medecin",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "patient",
+      "otherEntityRelationshipName": "appointements",
+      "relationshipName": "patient",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "shiftHoraire",
+      "otherEntityRelationshipName": "appointements",
+      "relationshipName": "shiftHoraire",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "service": "serviceClass"
+}

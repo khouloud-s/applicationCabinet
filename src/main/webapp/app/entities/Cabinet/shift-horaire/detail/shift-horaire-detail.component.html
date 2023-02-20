@@ -1,0 +1,40 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="shiftHoraire">
+      <h2 data-cy="shiftHoraireDetailsHeading"><span>Shift Horaire</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>User Uuid</span></dt>
+        <dd>
+          <span>{{ shiftHoraire.userUuid }}</span>
+        </dd>
+        <dt><span>Id</span></dt>
+        <dd>
+          <span>{{ shiftHoraire.id }}</span>
+        </dd>
+        <dt><span>Time Start</span></dt>
+        <dd>
+          <span>{{ shiftHoraire.timeStart | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span>Time End</span></dt>
+        <dd>
+          <span>{{ shiftHoraire.timeEnd | formatMediumDatetime }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/shift-horaire', shiftHoraire.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

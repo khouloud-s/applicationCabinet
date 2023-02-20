@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <div *ngIf="medecin">
+      <h2 data-cy="medecinDetailsHeading"><span>Medecin</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span>User Uuid</span></dt>
+        <dd>
+          <span>{{ medecin.userUuid }}</span>
+        </dd>
+        <dt><span>Id</span></dt>
+        <dd>
+          <span>{{ medecin.id }}</span>
+        </dd>
+        <dt><span>Full Name</span></dt>
+        <dd>
+          <span>{{ medecin.fullName }}</span>
+        </dd>
+        <dt><span>Phone</span></dt>
+        <dd>
+          <span>{{ medecin.phone }}</span>
+        </dd>
+        <dt><span>Adress</span></dt>
+        <dd>
+          <span>{{ medecin.adress }}</span>
+        </dd>
+        <dt><span>Is Active</span></dt>
+        <dd>
+          <span>{{ medecin.isActive }}</span>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/medecin', medecin.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+      </button>
+    </div>
+  </div>
+</div>
