@@ -235,19 +235,6 @@ class PatientResourceIT {
 
     @Test
     @Transactional
-    void getAllPatientsByUserUuidIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        patientRepository.saveAndFlush(patient);
-
-        // Get all the patientList where userUuid not equals to DEFAULT_USER_UUID
-        defaultPatientShouldNotBeFound("userUuid.notEquals=" + DEFAULT_USER_UUID);
-
-        // Get all the patientList where userUuid not equals to UPDATED_USER_UUID
-        defaultPatientShouldBeFound("userUuid.notEquals=" + UPDATED_USER_UUID);
-    }
-
-    @Test
-    @Transactional
     void getAllPatientsByUserUuidIsInShouldWork() throws Exception {
         // Initialize the database
         patientRepository.saveAndFlush(patient);
@@ -283,19 +270,6 @@ class PatientResourceIT {
 
         // Get all the patientList where fullName equals to UPDATED_FULL_NAME
         defaultPatientShouldNotBeFound("fullName.equals=" + UPDATED_FULL_NAME);
-    }
-
-    @Test
-    @Transactional
-    void getAllPatientsByFullNameIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        patientRepository.saveAndFlush(patient);
-
-        // Get all the patientList where fullName not equals to DEFAULT_FULL_NAME
-        defaultPatientShouldNotBeFound("fullName.notEquals=" + DEFAULT_FULL_NAME);
-
-        // Get all the patientList where fullName not equals to UPDATED_FULL_NAME
-        defaultPatientShouldBeFound("fullName.notEquals=" + UPDATED_FULL_NAME);
     }
 
     @Test
@@ -365,19 +339,6 @@ class PatientResourceIT {
 
     @Test
     @Transactional
-    void getAllPatientsByEmailIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        patientRepository.saveAndFlush(patient);
-
-        // Get all the patientList where email not equals to DEFAULT_EMAIL
-        defaultPatientShouldNotBeFound("email.notEquals=" + DEFAULT_EMAIL);
-
-        // Get all the patientList where email not equals to UPDATED_EMAIL
-        defaultPatientShouldBeFound("email.notEquals=" + UPDATED_EMAIL);
-    }
-
-    @Test
-    @Transactional
     void getAllPatientsByEmailIsInShouldWork() throws Exception {
         // Initialize the database
         patientRepository.saveAndFlush(patient);
@@ -431,13 +392,10 @@ class PatientResourceIT {
     @Test
     @Transactional
     void getAllPatientsByAppointementsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        patientRepository.saveAndFlush(patient);
         Appointement appointements;
         if (TestUtil.findAll(em, Appointement.class).isEmpty()) {
+            patientRepository.saveAndFlush(patient);
             appointements = AppointementResourceIT.createEntity(em);
-            em.persist(appointements);
-            em.flush();
         } else {
             appointements = TestUtil.findAll(em, Appointement.class).get(0);
         }
@@ -505,7 +463,7 @@ class PatientResourceIT {
 
     @Test
     @Transactional
-    void putNewPatient() throws Exception {
+    void putExistingPatient() throws Exception {
         // Initialize the database
         patientRepository.saveAndFlush(patient);
 

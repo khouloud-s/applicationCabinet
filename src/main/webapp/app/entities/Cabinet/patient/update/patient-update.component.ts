@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import { IPatient, Patient } from '../patient.model';
+import { PatientFormService, PatientFormGroup } from './patient-form.service';
+import { IPatient } from '../patient.model';
 import { PatientService } from '../service/patient.service';
 import { AlertError } from 'app/shared/alert/alert-error.model';
 import { EventManager, EventWithContent } from 'app/core/util/event-manager.service';
@@ -17,27 +17,24 @@ import { DataUtils, FileLoadError } from 'app/core/util/data-util.service';
 })
 export class PatientUpdateComponent implements OnInit {
   isSaving = false;
+  patient: IPatient | null = null;
 
-  editForm = this.fb.group({
-    userUuid: [null, [Validators.required]],
-    id: [],
-    fullName: [null, [Validators.min(5), Validators.max(30)]],
-    email: [],
-    scanOrdonnance: [],
-    scanOrdonnanceContentType: [],
-  });
+  editForm: PatientFormGroup = this.patientFormService.createPatientFormGroup();
 
   constructor(
     protected dataUtils: DataUtils,
     protected eventManager: EventManager,
     protected patientService: PatientService,
-    protected activatedRoute: ActivatedRoute,
-    protected fb: FormBuilder
+    protected patientFormService: PatientFormService,
+    protected activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ patient }) => {
-      this.updateForm(patient);
+      this.patient = patient;
+      if (patient) {
+        this.updateForm(patient);
+      }
     });
   }
 
@@ -62,8 +59,8 @@ export class PatientUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const patient = this.createFromForm();
-    if (patient.id !== undefined) {
+    const patient = this.patientFormService.getPatient(this.editForm);
+    if (patient.id !== null) {
       this.subscribeToSaveResponse(this.patientService.update(patient));
     } else {
       this.subscribeToSaveResponse(this.patientService.create(patient));
@@ -90,25 +87,7 @@ export class PatientUpdateComponent implements OnInit {
   }
 
   protected updateForm(patient: IPatient): void {
-    this.editForm.patchValue({
-      userUuid: patient.userUuid,
-      id: patient.id,
-      fullName: patient.fullName,
-      email: patient.email,
-      scanOrdonnance: patient.scanOrdonnance,
-      scanOrdonnanceContentType: patient.scanOrdonnanceContentType,
-    });
-  }
-
-  protected createFromForm(): IPatient {
-    return {
-      ...new Patient(),
-      userUuid: this.editForm.get(['userUuid'])!.value,
-      id: this.editForm.get(['id'])!.value,
-      fullName: this.editForm.get(['fullName'])!.value,
-      email: this.editForm.get(['email'])!.value,
-      scanOrdonnanceContentType: this.editForm.get(['scanOrdonnanceContentType'])!.value,
-      scanOrdonnance: this.editForm.get(['scanOrdonnance'])!.value,
-    };
+    this.patient = patient;
+    this.patientFormService.resetForm(this.editForm, patient);
   }
 }

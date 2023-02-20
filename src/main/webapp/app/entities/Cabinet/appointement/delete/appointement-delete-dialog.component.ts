@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { IAppointement } from '../appointement.model';
 import { AppointementService } from '../service/appointement.service';
+import { ITEM_DELETED_EVENT } from 'app/config/navigation.constants';
 
 @Component({
   templateUrl: './appointement-delete-dialog.component.html',
@@ -18,7 +19,7 @@ export class AppointementDeleteDialogComponent {
 
   confirmDelete(id: number): void {
     this.appointementService.delete(id).subscribe(() => {
-      this.activeModal.close('deleted');
+      this.activeModal.close(ITEM_DELETED_EVENT);
     });
   }
 }

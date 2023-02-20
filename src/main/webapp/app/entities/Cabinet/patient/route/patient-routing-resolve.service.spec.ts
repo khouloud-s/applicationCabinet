@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { IPatient, Patient } from '../patient.model';
+import { IPatient } from '../patient.model';
 import { PatientService } from '../service/patient.service';
 
 import { PatientRoutingResolveService } from './patient-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('Patient routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: PatientRoutingResolveService;
   let service: PatientService;
-  let resultPatient: IPatient | undefined;
+  let resultPatient: IPatient | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Patient routing resolve service', () => {
       expect(resultPatient).toEqual({ id: 123 });
     });
 
-    it('should return new IPatient if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('Patient routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultPatient).toEqual(new Patient());
+      expect(resultPatient).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Patient })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IPatient>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: 123 };
 
       // WHEN

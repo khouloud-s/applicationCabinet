@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-appointement-heading" data-cy="AppointementCreateUpdateHeading">Create or edit a Appointement</h2>
+      <h2 id="jhi-appointement-heading" data-cy="AppointementCreateUpdateHeading">Créer ou éditer un Appointement</h2>
 
       <div>
         <jhi-alert-error></jhi-alert-error>
@@ -10,11 +10,11 @@
           <label class="form-label" for="field_userUuid">User Uuid</label>
           <input type="text" class="form-control" name="userUuid" id="field_userUuid" data-cy="userUuid" formControlName="userUuid" />
           <div *ngIf="editForm.get('userUuid')!.invalid && (editForm.get('userUuid')!.dirty || editForm.get('userUuid')!.touched)">
-            <small class="form-text text-danger" *ngIf="editForm.get('userUuid')?.errors?.required"> This field is required. </small>
+            <small class="form-text text-danger" *ngIf="editForm.get('userUuid')?.errors?.required"> Ce champ est obligatoire. </small>
           </div>
         </div>
 
-        <div class="row mb-3" [hidden]="editForm.get('id')!.value == null">
+        <div class="row mb-3" *ngIf="editForm.controls.id.value !== null">
           <label class="form-label" for="field_id">Id</label>
           <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
         </div>
@@ -43,40 +43,46 @@
 
         <div class="row mb-3">
           <label class="form-label" for="field_medecin">Medecin</label>
-          <select class="form-control" id="field_medecin" data-cy="medecin" name="medecin" formControlName="medecin">
+          <select
+            class="form-control"
+            id="field_medecin"
+            data-cy="medecin"
+            name="medecin"
+            formControlName="medecin"
+            [compareWith]="compareMedecin"
+          >
             <option [ngValue]="null"></option>
-            <option
-              [ngValue]="medecinOption.id === editForm.get('medecin')!.value?.id ? editForm.get('medecin')!.value : medecinOption"
-              *ngFor="let medecinOption of medecinsSharedCollection; trackBy: trackMedecinById"
-            >
-              {{ medecinOption.id }}
-            </option>
+            <option [ngValue]="medecinOption" *ngFor="let medecinOption of medecinsSharedCollection">{{ medecinOption.id }}</option>
           </select>
         </div>
 
         <div class="row mb-3">
           <label class="form-label" for="field_patient">Patient</label>
-          <select class="form-control" id="field_patient" data-cy="patient" name="patient" formControlName="patient">
+          <select
+            class="form-control"
+            id="field_patient"
+            data-cy="patient"
+            name="patient"
+            formControlName="patient"
+            [compareWith]="comparePatient"
+          >
             <option [ngValue]="null"></option>
-            <option
-              [ngValue]="patientOption.id === editForm.get('patient')!.value?.id ? editForm.get('patient')!.value : patientOption"
-              *ngFor="let patientOption of patientsSharedCollection; trackBy: trackPatientById"
-            >
-              {{ patientOption.id }}
-            </option>
+            <option [ngValue]="patientOption" *ngFor="let patientOption of patientsSharedCollection">{{ patientOption.id }}</option>
           </select>
         </div>
 
         <div class="row mb-3">
           <label class="form-label" for="field_shiftHoraire">Shift Horaire</label>
-          <select class="form-control" id="field_shiftHoraire" data-cy="shiftHoraire" name="shiftHoraire" formControlName="shiftHoraire">
+          <select
+            class="form-control"
+            id="field_shiftHoraire"
+            data-cy="shiftHoraire"
+            name="shiftHoraire"
+            formControlName="shiftHoraire"
+            [compareWith]="compareShiftHoraire"
+          >
             <option [ngValue]="null"></option>
-            <option
-              [ngValue]="
-                shiftHoraireOption.id === editForm.get('shiftHoraire')!.value?.id ? editForm.get('shiftHoraire')!.value : shiftHoraireOption
-              "
-              *ngFor="let shiftHoraireOption of shiftHorairesSharedCollection; trackBy: trackShiftHoraireById"
-            >
+            <option [ngValue]="shiftHoraireOption" *ngFor="let shiftHoraireOption of shiftHorairesSharedCollection">
               {{ shiftHoraireOption.id }}
             </option>
           </select>
@@ -85,7 +91,7 @@
 
       <div>
         <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
-          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Cancel</span>
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span>Annuler</span>
         </button>
 
         <button
@@ -95,7 +101,7 @@
           [disabled]="editForm.invalid || isSaving"
           class="btn btn-primary"
         >
-          <fa-icon icon="save"></fa-icon>&nbsp;<span>Save</span>
+          <fa-icon icon="save"></fa-icon>&nbsp;<span>Sauvegarder</span>
         </button>
       </div>
     </form>

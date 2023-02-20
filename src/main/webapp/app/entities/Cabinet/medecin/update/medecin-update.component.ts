@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import { IMedecin, Medecin } from '../medecin.model';
+import { MedecinFormService, MedecinFormGroup } from './medecin-form.service';
+import { IMedecin } from '../medecin.model';
 import { MedecinService } from '../service/medecin.service';
 
 @Component({
@@ -14,21 +14,22 @@ import { MedecinService } from '../service/medecin.service';
 })
 export class MedecinUpdateComponent implements OnInit {
   isSaving = false;
+  medecin: IMedecin | null = null;
 
-  editForm = this.fb.group({
-    userUuid: [null, [Validators.required]],
-    id: [],
-    fullName: [],
-    phone: [],
-    adress: [],
-    isActive: [],
-  });
+  editForm: MedecinFormGroup = this.medecinFormService.createMedecinFormGroup();
 
-  constructor(protected medecinService: MedecinService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder) {}
+  constructor(
+    protected medecinService: MedecinService,
+    protected medecinFormService: MedecinFormService,
+    protected activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ medecin }) => {
-      this.updateForm(medecin);
+      this.medecin = medecin;
+      if (medecin) {
+        this.updateForm(medecin);
+      }
     });
   }
 
@@ -38,8 +39,8 @@ export class MedecinUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const medecin = this.createFromForm();
-    if (medecin.id !== undefined) {
+    const medecin = this.medecinFormService.getMedecin(this.editForm);
+    if (medecin.id !== null) {
       this.subscribeToSaveResponse(this.medecinService.update(medecin));
     } else {
       this.subscribeToSaveResponse(this.medecinService.create(medecin));
@@ -66,25 +67,7 @@ export class MedecinUpdateComponent implements OnInit {
   }
 
   protected updateForm(medecin: IMedecin): void {
-    this.editForm.patchValue({
-      userUuid: medecin.userUuid,
-      id: medecin.id,
-      fullName: medecin.fullName,
-      phone: medecin.phone,
-      adress: medecin.adress,
-      isActive: medecin.isActive,
-    });
-  }
-
-  protected createFromForm(): IMedecin {
-    return {
-      ...new Medecin(),
-      userUuid: this.editForm.get(['userUuid'])!.value,
-      id: this.editForm.get(['id'])!.value,
-      fullName: this.editForm.get(['fullName'])!.value,
-      phone: this.editForm.get(['phone'])!.value,
-      adress: this.editForm.get(['adress'])!.value,
-      isActive: this.editForm.get(['isActive'])!.value,
-    };
+    this.medecin = medecin;
+    this.medecinFormService.resetForm(this.editForm, medecin);
   }
 }

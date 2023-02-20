@@ -235,19 +235,6 @@ class MedecinResourceIT {
 
     @Test
     @Transactional
-    void getAllMedecinsByUserUuidIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        medecinRepository.saveAndFlush(medecin);
-
-        // Get all the medecinList where userUuid not equals to DEFAULT_USER_UUID
-        defaultMedecinShouldNotBeFound("userUuid.notEquals=" + DEFAULT_USER_UUID);
-
-        // Get all the medecinList where userUuid not equals to UPDATED_USER_UUID
-        defaultMedecinShouldBeFound("userUuid.notEquals=" + UPDATED_USER_UUID);
-    }
-
-    @Test
-    @Transactional
     void getAllMedecinsByUserUuidIsInShouldWork() throws Exception {
         // Initialize the database
         medecinRepository.saveAndFlush(medecin);
@@ -283,19 +270,6 @@ class MedecinResourceIT {
 
         // Get all the medecinList where fullName equals to UPDATED_FULL_NAME
         defaultMedecinShouldNotBeFound("fullName.equals=" + UPDATED_FULL_NAME);
-    }
-
-    @Test
-    @Transactional
-    void getAllMedecinsByFullNameIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        medecinRepository.saveAndFlush(medecin);
-
-        // Get all the medecinList where fullName not equals to DEFAULT_FULL_NAME
-        defaultMedecinShouldNotBeFound("fullName.notEquals=" + DEFAULT_FULL_NAME);
-
-        // Get all the medecinList where fullName not equals to UPDATED_FULL_NAME
-        defaultMedecinShouldBeFound("fullName.notEquals=" + UPDATED_FULL_NAME);
     }
 
     @Test
@@ -365,19 +339,6 @@ class MedecinResourceIT {
 
     @Test
     @Transactional
-    void getAllMedecinsByPhoneIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        medecinRepository.saveAndFlush(medecin);
-
-        // Get all the medecinList where phone not equals to DEFAULT_PHONE
-        defaultMedecinShouldNotBeFound("phone.notEquals=" + DEFAULT_PHONE);
-
-        // Get all the medecinList where phone not equals to UPDATED_PHONE
-        defaultMedecinShouldBeFound("phone.notEquals=" + UPDATED_PHONE);
-    }
-
-    @Test
-    @Transactional
     void getAllMedecinsByPhoneIsInShouldWork() throws Exception {
         // Initialize the database
         medecinRepository.saveAndFlush(medecin);
@@ -439,19 +400,6 @@ class MedecinResourceIT {
 
         // Get all the medecinList where adress equals to UPDATED_ADRESS
         defaultMedecinShouldNotBeFound("adress.equals=" + UPDATED_ADRESS);
-    }
-
-    @Test
-    @Transactional
-    void getAllMedecinsByAdressIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        medecinRepository.saveAndFlush(medecin);
-
-        // Get all the medecinList where adress not equals to DEFAULT_ADRESS
-        defaultMedecinShouldNotBeFound("adress.notEquals=" + DEFAULT_ADRESS);
-
-        // Get all the medecinList where adress not equals to UPDATED_ADRESS
-        defaultMedecinShouldBeFound("adress.notEquals=" + UPDATED_ADRESS);
     }
 
     @Test
@@ -521,19 +469,6 @@ class MedecinResourceIT {
 
     @Test
     @Transactional
-    void getAllMedecinsByIsActiveIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        medecinRepository.saveAndFlush(medecin);
-
-        // Get all the medecinList where isActive not equals to DEFAULT_IS_ACTIVE
-        defaultMedecinShouldNotBeFound("isActive.notEquals=" + DEFAULT_IS_ACTIVE);
-
-        // Get all the medecinList where isActive not equals to UPDATED_IS_ACTIVE
-        defaultMedecinShouldBeFound("isActive.notEquals=" + UPDATED_IS_ACTIVE);
-    }
-
-    @Test
-    @Transactional
     void getAllMedecinsByIsActiveIsInShouldWork() throws Exception {
         // Initialize the database
         medecinRepository.saveAndFlush(medecin);
@@ -561,13 +496,10 @@ class MedecinResourceIT {
     @Test
     @Transactional
     void getAllMedecinsByAppointementsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        medecinRepository.saveAndFlush(medecin);
         Appointement appointements;
         if (TestUtil.findAll(em, Appointement.class).isEmpty()) {
+            medecinRepository.saveAndFlush(medecin);
             appointements = AppointementResourceIT.createEntity(em);
-            em.persist(appointements);
-            em.flush();
         } else {
             appointements = TestUtil.findAll(em, Appointement.class).get(0);
         }
@@ -635,7 +567,7 @@ class MedecinResourceIT {
 
     @Test
     @Transactional
-    void putNewMedecin() throws Exception {
+    void putExistingMedecin() throws Exception {
         // Initialize the database
         medecinRepository.saveAndFlush(medecin);
 

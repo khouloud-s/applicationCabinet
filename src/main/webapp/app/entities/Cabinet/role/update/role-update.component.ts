@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import { IRole, Role } from '../role.model';
+import { RoleFormService, RoleFormGroup } from './role-form.service';
+import { IRole } from '../role.model';
 import { RoleService } from '../service/role.service';
 import { RoleName } from 'app/entities/enumerations/role-name.model';
 
@@ -15,19 +15,19 @@ import { RoleName } from 'app/entities/enumerations/role-name.model';
 })
 export class RoleUpdateComponent implements OnInit {
   isSaving = false;
+  role: IRole | null = null;
   roleNameValues = Object.keys(RoleName);
 
-  editForm = this.fb.group({
-    userUuid: [null, [Validators.required]],
-    id: [null, [Validators.required]],
-    rolename: [],
-  });
+  editForm: RoleFormGroup = this.roleFormService.createRoleFormGroup();
 
-  constructor(protected roleService: RoleService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder) {}
+  constructor(protected roleService: RoleService, protected roleFormService: RoleFormService, protected activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ role }) => {
-      this.updateForm(role);
+      this.role = role;
+      if (role) {
+        this.updateForm(role);
+      }
     });
   }
 
@@ -37,8 +37,8 @@ export class RoleUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const role = this.createFromForm();
-    if (role.id !== undefined) {
+    const role = this.roleFormService.getRole(this.editForm);
+    if (role.id !== null) {
       this.subscribeToSaveResponse(this.roleService.update(role));
     } else {
       this.subscribeToSaveResponse(this.roleService.create(role));
@@ -65,19 +65,7 @@ export class RoleUpdateComponent implements OnInit {
   }
 
   protected updateForm(role: IRole): void {
-    this.editForm.patchValue({
-      userUuid: role.userUuid,
-      id: role.id,
-      rolename: role.rolename,
-    });
-  }
-
-  protected createFromForm(): IRole {
-    return {
-      ...new Role(),
-      userUuid: this.editForm.get(['userUuid'])!.value,
-      id: this.editForm.get(['id'])!.value,
-      rolename: this.editForm.get(['rolename'])!.value,
-    };
+    this.role = role;
+    this.roleFormService.resetForm(this.editForm, role);
   }
 }

@@ -50,7 +50,7 @@ public class MedecinService {
      * @return the persisted entity.
      */
     public MedecinDTO update(MedecinDTO medecinDTO) {
-        log.debug("Request to save Medecin : {}", medecinDTO);
+        log.debug("Request to update Medecin : {}", medecinDTO);
         Medecin medecin = medecinMapper.toEntity(medecinDTO);
         medecin = medecinRepository.save(medecin);
         return medecinMapper.toDto(medecin);

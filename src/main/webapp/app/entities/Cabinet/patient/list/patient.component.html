@@ -3,9 +3,9 @@
     <span>Patients</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span>Refresh List</span>
+        <span>Actualiser la liste</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/patient/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span> Create a new Patient </span>
+        <span> Créer un nouveau Patient </span>
       </button>
     </div>
   </h2>
@@ -24,19 +24,46 @@
 
   <jhi-alert></jhi-alert>
 
+  <jhi-filter [filters]="filters"></jhi-filter>
+
   <div class="alert alert-warning" id="no-result" *ngIf="patients?.length === 0">
-    <span>No patients found</span>
+    <span>Aucun Patient trouvé</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="patients && patients.length > 0">
+  <div class="table-responsive table-entities" id="entities" *ngIf="patients && patients.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-          <th scope="col" jhiSortBy="userUuid"><span>User Uuid</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="id"><span>Id</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="fullName"><span>Full Name</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="email"><span>Email</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="scanOrdonnance"><span>Scan Ordonnance</span> <fa-icon icon="sort"></fa-icon></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="userUuid">
+            <div class="d-flex">
+              <span>User Uuid</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span>Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="fullName">
+            <div class="d-flex">
+              <span>Full Name</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="email">
+            <div class="d-flex">
+              <span>Email</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="scanOrdonnance">
+            <div class="d-flex">
+              <span>Scan Ordonnance</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -49,11 +76,21 @@
           <td>{{ patient.fullName }}</td>
           <td>{{ patient.email }}</td>
           <td>
-            <a *ngIf="patient.scanOrdonnance" (click)="openFile(patient.scanOrdonnance, patient.scanOrdonnanceContentType)">open</a>
+            <a *ngIf="patient.scanOrdonnance" (click)="openFile(patient.scanOrdonnance, patient.scanOrdonnanceContentType)">Ouvrir</a>
             <span *ngIf="patient.scanOrdonnance">{{ patient.scanOrdonnanceContentType }}, {{ byteSize(patient.scanOrdonnance) }}</span>
           </td>
           <td class="text-end">
             <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/appointement']"
+                [queryParams]="{ 'filter[patientId.in]': patient.id }"
+                class="btn btn-info btn-sm"
+                data-cy="filterOtherEntityButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">Show Appointement</span>
+              </button>
               <button
                 type="submit"
                 [routerLink]="['/patient', patient.id, 'view']"
@@ -61,7 +98,7 @@
                 data-cy="entityDetailsButton"
               >
                 <fa-icon icon="eye"></fa-icon>
-                <span class="d-none d-md-inline">View</span>
+                <span class="d-none d-md-inline">Voir</span>
               </button>
 
               <button
@@ -71,12 +108,12 @@
                 data-cy="entityEditButton"
               >
                 <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline">Edit</span>
+                <span class="d-none d-md-inline">Editer</span>
               </button>
 
               <button type="submit" (click)="delete(patient)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                 <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline">Delete</span>
+                <span class="d-none d-md-inline">Supprimer</span>
               </button>
             </div>
           </td>
@@ -93,12 +130,12 @@
     <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
-        [(page)]="ngbPaginationPage"
+        [page]="page"
         [pageSize]="itemsPerPage"
         [maxSize]="5"
         [rotate]="true"
         [boundaryLinks]="true"
-        (pageChange)="loadPage($event)"
+        (pageChange)="navigateToPage($event)"
       ></ngb-pagination>
     </div>
   </div>

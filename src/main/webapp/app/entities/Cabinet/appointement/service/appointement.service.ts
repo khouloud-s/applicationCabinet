@@ -8,7 +8,19 @@ import { isPresent } from 'app/core/util/operators';
 import { DATE_FORMAT } from 'app/config/input.constants';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
-import { IAppointement, getAppointementIdentifier } from '../appointement.model';
+import { IAppointement, NewAppointement } from '../appointement.model';
+
+export type PartialUpdateAppointement = Partial<IAppointement> & Pick<IAppointement, 'id'>;
+
+type RestOf<T extends IAppointement | NewAppointement> = Omit<T, 'date'> & {
+  date?: string | null;
+};
+
+export type RestAppointement = RestOf<IAppointement>;
+
+export type NewRestAppointement = RestOf<NewAppointement>;
+
+export type PartialUpdateRestAppointement = RestOf<PartialUpdateAppointement>;
 
 export type EntityResponseType = HttpResponse<IAppointement>;
 export type EntityArrayResponseType = HttpResponse<IAppointement[]>;
@@ -19,56 +31,64 @@ export class AppointementService {
 
   constructor(protected http: HttpClient, protected applicationConfigService: ApplicationConfigService) {}
 
-  create(appointement: IAppointement): Observable<EntityResponseType> {
+  create(appointement: NewAppointement): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(appointement);
     return this.http
-      .post<IAppointement>(this.resourceUrl, copy, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .post<RestAppointement>(this.resourceUrl, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   update(appointement: IAppointement): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(appointement);
     return this.http
-      .put<IAppointement>(`${this.resourceUrl}/${getAppointementIdentifier(appointement) as number}`, copy, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .put<RestAppointement>(`${this.resourceUrl}/${this.getAppointementIdentifier(appointement)}`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
-  partialUpdate(appointement: IAppointement): Observable<EntityResponseType> {
+  partialUpdate(appointement: PartialUpdateAppointement): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(appointement);
     return this.http
-      .patch<IAppointement>(`${this.resourceUrl}/${getAppointementIdentifier(appointement) as number}`, copy, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .patch<RestAppointement>(`${this.resourceUrl}/${this.getAppointementIdentifier(appointement)}`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   find(id: number): Observable<EntityResponseType> {
     return this.http
-      .get<IAppointement>(`${this.resourceUrl}/${id}`, { observe: 'response' })
-      .pipe(map((res: EntityResponseType) => this.convertDateFromServer(res)));
+      .get<RestAppointement>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http
-      .get<IAppointement[]>(this.resourceUrl, { params: options, observe: 'response' })
-      .pipe(map((res: EntityArrayResponseType) => this.convertDateArrayFromServer(res)));
+      .get<RestAppointement[]>(this.resourceUrl, { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
-  addAppointementToCollectionIfMissing(
-    appointementCollection: IAppointement[],
-    ...appointementsToCheck: (IAppointement | null | undefined)[]
-  ): IAppointement[] {
-    const appointements: IAppointement[] = appointementsToCheck.filter(isPresent);
+  getAppointementIdentifier(appointement: Pick<IAppointement, 'id'>): number {
+    return appointement.id;
+  }
+
+  compareAppointement(o1: Pick<IAppointement, 'id'> | null, o2: Pick<IAppointement, 'id'> | null): boolean {
+    return o1 && o2 ? this.getAppointementIdentifier(o1) === this.getAppointementIdentifier(o2) : o1 === o2;
+  }
+
+  addAppointementToCollectionIfMissing<Type extends Pick<IAppointement, 'id'>>(
+    appointementCollection: Type[],
+    ...appointementsToCheck: (Type | null | undefined)[]
+  ): Type[] {
+    const appointements: Type[] = appointementsToCheck.filter(isPresent);
     if (appointements.length > 0) {
       const appointementCollectionIdentifiers = appointementCollection.map(
-        appointementItem => getAppointementIdentifier(appointementItem)!
+        appointementItem => this.getAppointementIdentifier(appointementItem)!
       );
       const appointementsToAdd = appointements.filter(appointementItem => {
-        const appointementIdentifier = getAppointementIdentifier(appointementItem);
-        if (appointementIdentifier == null || appointementCollectionIdentifiers.includes(appointementIdentifier)) {
+        const appointementIdentifier = this.getAppointementIdentifier(appointementItem);
+        if (appointementCollectionIdentifiers.includes(appointementIdentifier)) {
           return false;
         }
         appointementCollectionIdentifiers.push(appointementIdentifier);
@@ -79,25 +99,29 @@ export class AppointementService {
     return appointementCollection;
   }
 
-  protected convertDateFromClient(appointement: IAppointement): IAppointement {
-    return Object.assign({}, appointement, {
-      date: appointement.date?.isValid() ? appointement.date.format(DATE_FORMAT) : undefined,
+  protected convertDateFromClient<T extends IAppointement | NewAppointement | PartialUpdateAppointement>(appointement: T): RestOf<T> {
+    return {
+      ...appointement,
+      date: appointement.date?.format(DATE_FORMAT) ?? null,
+    };
+  }
+
+  protected convertDateFromServer(restAppointement: RestAppointement): IAppointement {
+    return {
+      ...restAppointement,
+      date: restAppointement.date ? dayjs(restAppointement.date) : undefined,
+    };
+  }
+
+  protected convertResponseFromServer(res: HttpResponse<RestAppointement>): HttpResponse<IAppointement> {
+    return res.clone({
+      body: res.body ? this.convertDateFromServer(res.body) : null,
     });
   }
 
-  protected convertDateFromServer(res: EntityResponseType): EntityResponseType {
-    if (res.body) {
-      res.body.date = res.body.date ? dayjs(res.body.date) : undefined;
-    }
-    return res;
-  }
-
-  protected convertDateArrayFromServer(res: EntityArrayResponseType): EntityArrayResponseType {
-    if (res.body) {
-      res.body.forEach((appointement: IAppointement) => {
-        appointement.date = appointement.date ? dayjs(appointement.date) : undefined;
-      });
-    }
-    return res;
+  protected convertResponseArrayFromServer(res: HttpResponse<RestAppointement[]>): HttpResponse<IAppointement[]> {
+    return res.clone({
+      body: res.body ? res.body.map(item => this.convertDateFromServer(item)) : null,
+    });
   }
 }

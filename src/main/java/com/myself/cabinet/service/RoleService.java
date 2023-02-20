@@ -50,7 +50,7 @@ public class RoleService {
      * @return the persisted entity.
      */
     public RoleDTO update(RoleDTO roleDTO) {
-        log.debug("Request to save Role : {}", roleDTO);
+        log.debug("Request to update Role : {}", roleDTO);
         Role role = roleMapper.toEntity(roleDTO);
         role = roleRepository.save(role);
         return roleMapper.toDto(role);

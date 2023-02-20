@@ -5,14 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import org.springdoc.api.annotations.ParameterObject;
 import tech.jhipster.service.Criteria;
-import tech.jhipster.service.filter.BooleanFilter;
-import tech.jhipster.service.filter.DoubleFilter;
-import tech.jhipster.service.filter.Filter;
-import tech.jhipster.service.filter.FloatFilter;
-import tech.jhipster.service.filter.IntegerFilter;
-import tech.jhipster.service.filter.LongFilter;
-import tech.jhipster.service.filter.StringFilter;
-import tech.jhipster.service.filter.UUIDFilter;
+import tech.jhipster.service.filter.*;
 
 /**
  * Criteria class for the {@link com.myself.cabinet.domain.Role} entity. This class is used
@@ -24,6 +17,7 @@ import tech.jhipster.service.filter.UUIDFilter;
  * fix type specific filters.
  */
 @ParameterObject
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class RoleCriteria implements Serializable, Criteria {
 
     /**

@@ -6,13 +6,14 @@ import { RoleComponent } from '../list/role.component';
 import { RoleDetailComponent } from '../detail/role-detail.component';
 import { RoleUpdateComponent } from '../update/role-update.component';
 import { RoleRoutingResolveService } from './role-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const roleRoute: Routes = [
   {
     path: '',
     component: RoleComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

@@ -9,6 +9,5 @@ import { RoleRoutingModule } from './route/role-routing.module';
 @NgModule({
   imports: [SharedModule, RoleRoutingModule],
   declarations: [RoleComponent, RoleDetailComponent, RoleUpdateComponent, RoleDeleteDialogComponent],
-  entryComponents: [RoleDeleteDialogComponent],
 })
 export class CabinetRoleModule {}

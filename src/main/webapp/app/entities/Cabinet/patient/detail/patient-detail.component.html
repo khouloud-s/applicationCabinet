@@ -29,18 +29,18 @@
         <dt><span>Scan Ordonnance</span></dt>
         <dd>
           <div *ngIf="patient.scanOrdonnance">
-            <a (click)="openFile(patient.scanOrdonnance, patient.scanOrdonnanceContentType)">open</a>
+            <a (click)="openFile(patient.scanOrdonnance, patient.scanOrdonnanceContentType)">Ouvrir</a>
             {{ patient.scanOrdonnanceContentType }}, {{ byteSize(patient.scanOrdonnance) }}
           </div>
         </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Retour</span>
       </button>
 
       <button type="button" [routerLink]="['/patient', patient.id, 'edit']" class="btn btn-primary">
-        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Editer</span>
       </button>
     </div>
   </div>

@@ -1,11 +1,11 @@
 <div>
   <h2>
-    <span id="metrics-page-heading" data-cy="metricsPageHeading">Application Metrics</span>
+    <span id="metrics-page-heading" data-cy="metricsPageHeading">Métriques de l'application</span>
 
-    <button class="btn btn-primary float-end" (click)="refresh()"><fa-icon icon="sync"></fa-icon> <span>Refresh</span></button>
+    <button class="btn btn-primary float-end" (click)="refresh()"><fa-icon icon="sync"></fa-icon> <span>Rafraîchir</span></button>
   </h2>
 
-  <h3>JVM Metrics</h3>
+  <h3>Métriques de la JVM</h3>
 
   <div class="row" *ngIf="metrics && !updatingMetrics">
     <jhi-jvm-memory class="col-md-4" [updating]="updatingMetrics" [jvmMemoryMetrics]="metrics.jvm"></jhi-jvm-memory>
@@ -21,7 +21,7 @@
     [garbageCollectorMetrics]="metrics.garbageCollector"
   ></jhi-metrics-garbagecollector>
 
-  <div class="well well-lg" *ngIf="updatingMetrics">Updating...</div>
+  <div class="well well-lg" *ngIf="updatingMetrics">Mise à jour...</div>
 
   <jhi-metrics-request
     *ngIf="metrics && metricsKeyExists('http.server.requests')"

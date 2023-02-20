@@ -4,18 +4,18 @@ import { Resolve, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, of, EMPTY } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { IRole, Role } from '../role.model';
+import { IRole } from '../role.model';
 import { RoleService } from '../service/role.service';
 
 @Injectable({ providedIn: 'root' })
-export class RoleRoutingResolveService implements Resolve<IRole> {
+export class RoleRoutingResolveService implements Resolve<IRole | null> {
   constructor(protected service: RoleService, protected router: Router) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<IRole> | Observable<never> {
+  resolve(route: ActivatedRouteSnapshot): Observable<IRole | null | never> {
     const id = route.params['id'];
     if (id) {
       return this.service.find(id).pipe(
-        mergeMap((role: HttpResponse<Role>) => {
+        mergeMap((role: HttpResponse<IRole>) => {
           if (role.body) {
             return of(role.body);
           } else {
@@ -25,6 +25,6 @@ export class RoleRoutingResolveService implements Resolve<IRole> {
         })
       );
     }
-    return of(new Role());
+    return of(null);
   }
 }

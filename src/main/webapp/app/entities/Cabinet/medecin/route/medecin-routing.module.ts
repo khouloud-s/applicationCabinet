@@ -6,13 +6,14 @@ import { MedecinComponent } from '../list/medecin.component';
 import { MedecinDetailComponent } from '../detail/medecin-detail.component';
 import { MedecinUpdateComponent } from '../update/medecin-update.component';
 import { MedecinRoutingResolveService } from './medecin-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const medecinRoute: Routes = [
   {
     path: '',
     component: MedecinComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

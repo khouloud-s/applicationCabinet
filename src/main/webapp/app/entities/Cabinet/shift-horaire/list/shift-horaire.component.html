@@ -1,11 +1,11 @@
 <div>
   <h2 id="page-heading" data-cy="ShiftHoraireHeading">
-    <span>Shift Horaires</span>
+    <span>ShiftHoraires</span>
 
     <div class="d-flex justify-content-end">
-      <button class="btn btn-info me-2" (click)="loadPage()" [disabled]="isLoading">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
-        <span>Refresh List</span>
+        <span>Actualiser la liste</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/shift-horaire/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span> Create a new Shift Horaire </span>
+        <span> Créer un nouveau Shift Horaire </span>
       </button>
     </div>
   </h2>
@@ -24,18 +24,40 @@
 
   <jhi-alert></jhi-alert>
 
+  <jhi-filter [filters]="filters"></jhi-filter>
+
   <div class="alert alert-warning" id="no-result" *ngIf="shiftHoraires?.length === 0">
-    <span>No shiftHoraires found</span>
+    <span>Aucun Shift Horaire trouvé</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="shiftHoraires && shiftHoraires.length > 0">
+  <div class="table-responsive table-entities" id="entities" *ngIf="shiftHoraires && shiftHoraires.length > 0">
     <table class="table table-striped" aria-describedby="page-heading">
       <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
-          <th scope="col" jhiSortBy="userUuid"><span>User Uuid</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="id"><span>Id</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="timeStart"><span>Time Start</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="timeEnd"><span>Time End</span> <fa-icon icon="sort"></fa-icon></th>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="navigateToWithComponentValues()">
+          <th scope="col" jhiSortBy="userUuid">
+            <div class="d-flex">
+              <span>User Uuid</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="id">
+            <div class="d-flex">
+              <span>Id</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="timeStart">
+            <div class="d-flex">
+              <span>Time Start</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
+          <th scope="col" jhiSortBy="timeEnd">
+            <div class="d-flex">
+              <span>Time End</span>
+              <fa-icon class="p-1" icon="sort"></fa-icon>
+            </div>
+          </th>
           <th scope="col"></th>
         </tr>
       </thead>
@@ -51,12 +73,22 @@
             <div class="btn-group">
               <button
                 type="submit"
+                [routerLink]="['/appointement']"
+                [queryParams]="{ 'filter[shiftHoraireId.in]': shiftHoraire.id }"
+                class="btn btn-info btn-sm"
+                data-cy="filterOtherEntityButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">Show Appointement</span>
+              </button>
+              <button
+                type="submit"
                 [routerLink]="['/shift-horaire', shiftHoraire.id, 'view']"
                 class="btn btn-info btn-sm"
                 data-cy="entityDetailsButton"
               >
                 <fa-icon icon="eye"></fa-icon>
-                <span class="d-none d-md-inline">View</span>
+                <span class="d-none d-md-inline">Voir</span>
               </button>
 
               <button
@@ -66,12 +98,12 @@
                 data-cy="entityEditButton"
               >
                 <fa-icon icon="pencil-alt"></fa-icon>
-                <span class="d-none d-md-inline">Edit</span>
+                <span class="d-none d-md-inline">Editer</span>
               </button>
 
               <button type="submit" (click)="delete(shiftHoraire)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                 <fa-icon icon="times"></fa-icon>
-                <span class="d-none d-md-inline">Delete</span>
+                <span class="d-none d-md-inline">Supprimer</span>
               </button>
             </div>
           </td>
@@ -88,12 +120,12 @@
     <div class="d-flex justify-content-center">
       <ngb-pagination
         [collectionSize]="totalItems"
-        [(page)]="ngbPaginationPage"
+        [page]="page"
         [pageSize]="itemsPerPage"
         [maxSize]="5"
         [rotate]="true"
         [boundaryLinks]="true"
-        (pageChange)="loadPage($event)"
+        (pageChange)="navigateToPage($event)"
       ></ngb-pagination>
     </div>
   </div>

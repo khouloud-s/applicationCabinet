@@ -207,19 +207,6 @@ class RoleResourceIT {
 
     @Test
     @Transactional
-    void getAllRolesByUserUuidIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        roleRepository.saveAndFlush(role);
-
-        // Get all the roleList where userUuid not equals to DEFAULT_USER_UUID
-        defaultRoleShouldNotBeFound("userUuid.notEquals=" + DEFAULT_USER_UUID);
-
-        // Get all the roleList where userUuid not equals to UPDATED_USER_UUID
-        defaultRoleShouldBeFound("userUuid.notEquals=" + UPDATED_USER_UUID);
-    }
-
-    @Test
-    @Transactional
     void getAllRolesByUserUuidIsInShouldWork() throws Exception {
         // Initialize the database
         roleRepository.saveAndFlush(role);
@@ -255,19 +242,6 @@ class RoleResourceIT {
 
         // Get all the roleList where rolename equals to UPDATED_ROLENAME
         defaultRoleShouldNotBeFound("rolename.equals=" + UPDATED_ROLENAME);
-    }
-
-    @Test
-    @Transactional
-    void getAllRolesByRolenameIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        roleRepository.saveAndFlush(role);
-
-        // Get all the roleList where rolename not equals to DEFAULT_ROLENAME
-        defaultRoleShouldNotBeFound("rolename.notEquals=" + DEFAULT_ROLENAME);
-
-        // Get all the roleList where rolename not equals to UPDATED_ROLENAME
-        defaultRoleShouldBeFound("rolename.notEquals=" + UPDATED_ROLENAME);
     }
 
     @Test
@@ -344,7 +318,7 @@ class RoleResourceIT {
 
     @Test
     @Transactional
-    void putNewRole() throws Exception {
+    void putExistingRole() throws Exception {
         // Initialize the database
         roleRepository.saveAndFlush(role);
 

@@ -226,19 +226,6 @@ class ShiftHoraireResourceIT {
 
     @Test
     @Transactional
-    void getAllShiftHorairesByUserUuidIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        shiftHoraireRepository.saveAndFlush(shiftHoraire);
-
-        // Get all the shiftHoraireList where userUuid not equals to DEFAULT_USER_UUID
-        defaultShiftHoraireShouldNotBeFound("userUuid.notEquals=" + DEFAULT_USER_UUID);
-
-        // Get all the shiftHoraireList where userUuid not equals to UPDATED_USER_UUID
-        defaultShiftHoraireShouldBeFound("userUuid.notEquals=" + UPDATED_USER_UUID);
-    }
-
-    @Test
-    @Transactional
     void getAllShiftHorairesByUserUuidIsInShouldWork() throws Exception {
         // Initialize the database
         shiftHoraireRepository.saveAndFlush(shiftHoraire);
@@ -274,19 +261,6 @@ class ShiftHoraireResourceIT {
 
         // Get all the shiftHoraireList where timeStart equals to UPDATED_TIME_START
         defaultShiftHoraireShouldNotBeFound("timeStart.equals=" + UPDATED_TIME_START);
-    }
-
-    @Test
-    @Transactional
-    void getAllShiftHorairesByTimeStartIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        shiftHoraireRepository.saveAndFlush(shiftHoraire);
-
-        // Get all the shiftHoraireList where timeStart not equals to DEFAULT_TIME_START
-        defaultShiftHoraireShouldNotBeFound("timeStart.notEquals=" + DEFAULT_TIME_START);
-
-        // Get all the shiftHoraireList where timeStart not equals to UPDATED_TIME_START
-        defaultShiftHoraireShouldBeFound("timeStart.notEquals=" + UPDATED_TIME_START);
     }
 
     @Test
@@ -382,19 +356,6 @@ class ShiftHoraireResourceIT {
 
     @Test
     @Transactional
-    void getAllShiftHorairesByTimeEndIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        shiftHoraireRepository.saveAndFlush(shiftHoraire);
-
-        // Get all the shiftHoraireList where timeEnd not equals to DEFAULT_TIME_END
-        defaultShiftHoraireShouldNotBeFound("timeEnd.notEquals=" + DEFAULT_TIME_END);
-
-        // Get all the shiftHoraireList where timeEnd not equals to UPDATED_TIME_END
-        defaultShiftHoraireShouldBeFound("timeEnd.notEquals=" + UPDATED_TIME_END);
-    }
-
-    @Test
-    @Transactional
     void getAllShiftHorairesByTimeEndIsInShouldWork() throws Exception {
         // Initialize the database
         shiftHoraireRepository.saveAndFlush(shiftHoraire);
@@ -474,13 +435,10 @@ class ShiftHoraireResourceIT {
     @Test
     @Transactional
     void getAllShiftHorairesByAppointementsIsEqualToSomething() throws Exception {
-        // Initialize the database
-        shiftHoraireRepository.saveAndFlush(shiftHoraire);
         Appointement appointements;
         if (TestUtil.findAll(em, Appointement.class).isEmpty()) {
+            shiftHoraireRepository.saveAndFlush(shiftHoraire);
             appointements = AppointementResourceIT.createEntity(em);
-            em.persist(appointements);
-            em.flush();
         } else {
             appointements = TestUtil.findAll(em, Appointement.class).get(0);
         }
@@ -546,7 +504,7 @@ class ShiftHoraireResourceIT {
 
     @Test
     @Transactional
-    void putNewShiftHoraire() throws Exception {
+    void putExistingShiftHoraire() throws Exception {
         // Initialize the database
         shiftHoraireRepository.saveAndFlush(shiftHoraire);
 

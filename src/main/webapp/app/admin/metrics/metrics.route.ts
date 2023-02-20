@@ -6,6 +6,6 @@ export const metricsRoute: Route = {
   path: '',
   component: MetricsComponent,
   data: {
-    pageTitle: 'Application Metrics',
+    pageTitle: 'Métriques de l'application',
   },
 };

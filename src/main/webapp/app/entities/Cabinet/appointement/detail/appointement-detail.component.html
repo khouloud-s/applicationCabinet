@@ -29,29 +29,29 @@
         <dt><span>Medecin</span></dt>
         <dd>
           <div *ngIf="appointement.medecin">
-            <a [routerLink]="['/medecin', appointement.medecin?.id, 'view']">{{ appointement.medecin?.id }}</a>
+            <a [routerLink]="['/medecin', appointement.medecin.id, 'view']">{{ appointement.medecin.id }}</a>
           </div>
         </dd>
         <dt><span>Patient</span></dt>
         <dd>
           <div *ngIf="appointement.patient">
-            <a [routerLink]="['/patient', appointement.patient?.id, 'view']">{{ appointement.patient?.id }}</a>
+            <a [routerLink]="['/patient', appointement.patient.id, 'view']">{{ appointement.patient.id }}</a>
           </div>
         </dd>
         <dt><span>Shift Horaire</span></dt>
         <dd>
           <div *ngIf="appointement.shiftHoraire">
-            <a [routerLink]="['/shift-horaire', appointement.shiftHoraire?.id, 'view']">{{ appointement.shiftHoraire?.id }}</a>
+            <a [routerLink]="['/shift-horaire', appointement.shiftHoraire.id, 'view']">{{ appointement.shiftHoraire.id }}</a>
           </div>
         </dd>
       </dl>
 
       <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
-        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Retour</span>
       </button>
 
       <button type="button" [routerLink]="['/appointement', appointement.id, 'edit']" class="btn btn-primary">
-        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Editer</span>
       </button>
     </div>
   </div>

@@ -9,6 +9,5 @@ import { AppointementRoutingModule } from './route/appointement-routing.module';
 @NgModule({
   imports: [SharedModule, AppointementRoutingModule],
   declarations: [AppointementComponent, AppointementDetailComponent, AppointementUpdateComponent, AppointementDeleteDialogComponent],
-  entryComponents: [AppointementDeleteDialogComponent],
 })
 export class CabinetAppointementModule {}

@@ -6,13 +6,14 @@ import { AppointementComponent } from '../list/appointement.component';
 import { AppointementDetailComponent } from '../detail/appointement-detail.component';
 import { AppointementUpdateComponent } from '../update/appointement-update.component';
 import { AppointementRoutingResolveService } from './appointement-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const appointementRoute: Routes = [
   {
     path: '',
     component: AppointementComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

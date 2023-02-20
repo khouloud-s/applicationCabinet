@@ -1,14 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
-import dayjs from 'dayjs/esm';
-import { DATE_TIME_FORMAT } from 'app/config/input.constants';
-
-import { IShiftHoraire, ShiftHoraire } from '../shift-horaire.model';
+import { ShiftHoraireFormService, ShiftHoraireFormGroup } from './shift-horaire-form.service';
+import { IShiftHoraire } from '../shift-horaire.model';
 import { ShiftHoraireService } from '../service/shift-horaire.service';
 
 @Component({
@@ -17,25 +14,22 @@ import { ShiftHoraireService } from '../service/shift-horaire.service';
 })
 export class ShiftHoraireUpdateComponent implements OnInit {
   isSaving = false;
+  shiftHoraire: IShiftHoraire | null = null;
 
-  editForm = this.fb.group({
-    userUuid: [null, [Validators.required]],
-    id: [],
-    timeStart: [],
-    timeEnd: [],
-  });
+  editForm: ShiftHoraireFormGroup = this.shiftHoraireFormService.createShiftHoraireFormGroup();
 
-  constructor(protected shiftHoraireService: ShiftHoraireService, protected activatedRoute: ActivatedRoute, protected fb: FormBuilder) {}
+  constructor(
+    protected shiftHoraireService: ShiftHoraireService,
+    protected shiftHoraireFormService: ShiftHoraireFormService,
+    protected activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ shiftHoraire }) => {
-      if (shiftHoraire.id === undefined) {
-        const today = dayjs().startOf('day');
-        shiftHoraire.timeStart = today;
-        shiftHoraire.timeEnd = today;
+      this.shiftHoraire = shiftHoraire;
+      if (shiftHoraire) {
+        this.updateForm(shiftHoraire);
       }
-
-      this.updateForm(shiftHoraire);
     });
   }
 
@@ -45,8 +39,8 @@ export class ShiftHoraireUpdateComponent implements OnInit {
 
   save(): void {
     this.isSaving = true;
-    const shiftHoraire = this.createFromForm();
-    if (shiftHoraire.id !== undefined) {
+    const shiftHoraire = this.shiftHoraireFormService.getShiftHoraire(this.editForm);
+    if (shiftHoraire.id !== null) {
       this.subscribeToSaveResponse(this.shiftHoraireService.update(shiftHoraire));
     } else {
       this.subscribeToSaveResponse(this.shiftHoraireService.create(shiftHoraire));
@@ -73,21 +67,7 @@ export class ShiftHoraireUpdateComponent implements OnInit {
   }
 
   protected updateForm(shiftHoraire: IShiftHoraire): void {
-    this.editForm.patchValue({
-      userUuid: shiftHoraire.userUuid,
-      id: shiftHoraire.id,
-      timeStart: shiftHoraire.timeStart ? shiftHoraire.timeStart.format(DATE_TIME_FORMAT) : null,
-      timeEnd: shiftHoraire.timeEnd ? shiftHoraire.timeEnd.format(DATE_TIME_FORMAT) : null,
-    });
-  }
-
-  protected createFromForm(): IShiftHoraire {
-    return {
-      ...new ShiftHoraire(),
-      userUuid: this.editForm.get(['userUuid'])!.value,
-      id: this.editForm.get(['id'])!.value,
-      timeStart: this.editForm.get(['timeStart'])!.value ? dayjs(this.editForm.get(['timeStart'])!.value, DATE_TIME_FORMAT) : undefined,
-      timeEnd: this.editForm.get(['timeEnd'])!.value ? dayjs(this.editForm.get(['timeEnd'])!.value, DATE_TIME_FORMAT) : undefined,
-    };
+    this.shiftHoraire = shiftHoraire;
+    this.shiftHoraireFormService.resetForm(this.editForm, shiftHoraire);
   }
 }

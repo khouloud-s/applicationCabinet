@@ -5,7 +5,7 @@ import { ActivatedRouteSnapshot, ActivatedRoute, Router, convertToParamMap } fro
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 
-import { IRole, Role } from '../role.model';
+import { IRole } from '../role.model';
 import { RoleService } from '../service/role.service';
 
 import { RoleRoutingResolveService } from './role-routing-resolve.service';
@@ -15,7 +15,7 @@ describe('Role routing resolve service', () => {
   let mockActivatedRouteSnapshot: ActivatedRouteSnapshot;
   let routingResolveService: RoleRoutingResolveService;
   let service: RoleService;
-  let resultRole: IRole | undefined;
+  let resultRole: IRole | null | undefined;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('Role routing resolve service', () => {
       expect(resultRole).toEqual({ id: 123 });
     });
 
-    it('should return new IRole if id is not provided', () => {
+    it('should return null if id is not provided', () => {
       // GIVEN
       service.find = jest.fn();
       mockActivatedRouteSnapshot.params = {};
@@ -67,12 +67,12 @@ describe('Role routing resolve service', () => {
 
       // THEN
       expect(service.find).not.toBeCalled();
-      expect(resultRole).toEqual(new Role());
+      expect(resultRole).toEqual(null);
     });
 
     it('should route to 404 page if data not found in server', () => {
       // GIVEN
-      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse({ body: null as unknown as Role })));
+      jest.spyOn(service, 'find').mockReturnValue(of(new HttpResponse<IRole>({ body: null })));
       mockActivatedRouteSnapshot.params = { id: 123 };
 
       // WHEN

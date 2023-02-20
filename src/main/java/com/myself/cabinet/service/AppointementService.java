@@ -50,7 +50,7 @@ public class AppointementService {
      * @return the persisted entity.
      */
     public AppointementDTO update(AppointementDTO appointementDTO) {
-        log.debug("Request to save Appointement : {}", appointementDTO);
+        log.debug("Request to update Appointement : {}", appointementDTO);
         Appointement appointement = appointementMapper.toEntity(appointementDTO);
         appointement = appointementRepository.save(appointement);
         return appointementMapper.toDto(appointement);

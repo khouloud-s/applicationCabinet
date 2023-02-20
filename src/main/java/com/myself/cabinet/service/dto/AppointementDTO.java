@@ -11,6 +11,7 @@ import javax.validation.constraints.*;
  * A DTO for the {@link com.myself.cabinet.domain.Appointement} entity.
  */
 @Schema(description = "Cabinet")
+@SuppressWarnings("common-java:DuplicatedBlocks")
 public class AppointementDTO implements Serializable {
 
     @NotNull

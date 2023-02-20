@@ -98,7 +98,6 @@
       }
     }
   },
-  "defaultProject": "cabinet",
   "cli": {
     "cache": {
       "enabled": true,

@@ -6,13 +6,14 @@ import { ShiftHoraireComponent } from '../list/shift-horaire.component';
 import { ShiftHoraireDetailComponent } from '../detail/shift-horaire-detail.component';
 import { ShiftHoraireUpdateComponent } from '../update/shift-horaire-update.component';
 import { ShiftHoraireRoutingResolveService } from './shift-horaire-routing-resolve.service';
+import { ASC } from 'app/config/navigation.constants';
 
 const shiftHoraireRoute: Routes = [
   {
     path: '',
     component: ShiftHoraireComponent,
     data: {
-      defaultSort: 'id,asc',
+      defaultSort: 'id,' + ASC,
     },
     canActivate: [UserRouteAccessService],
   },

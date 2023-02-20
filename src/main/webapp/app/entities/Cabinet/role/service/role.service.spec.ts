@@ -1,15 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
-import { RoleName } from 'app/entities/enumerations/role-name.model';
-import { IRole, Role } from '../role.model';
+import { IRole } from '../role.model';
+import { sampleWithRequiredData, sampleWithNewData, sampleWithPartialData, sampleWithFullData } from '../role.test-samples';
 
 import { RoleService } from './role.service';
+
+const requireRestSample: IRole = {
+  ...sampleWithRequiredData,
+};
 
 describe('Role Service', () => {
   let service: RoleService;
   let httpMock: HttpTestingController;
-  let elemDefault: IRole;
   let expectedResult: IRole | IRole[] | boolean | null;
 
   beforeEach(() => {
@@ -19,36 +22,27 @@ describe('Role Service', () => {
     expectedResult = null;
     service = TestBed.inject(RoleService);
     httpMock = TestBed.inject(HttpTestingController);
-
-    elemDefault = {
-      userUuid: 'AAAAAAA',
-      id: 0,
-      rolename: RoleName.ROLE_MEDECIN,
-    };
   });
 
   describe('Service methods', () => {
     it('should find an element', () => {
-      const returnedFromService = Object.assign({}, elemDefault);
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
       service.find(123).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush(returnedFromService);
-      expect(expectedResult).toMatchObject(elemDefault);
+      expect(expectedResult).toMatchObject(expected);
     });
 
     it('should create a Role', () => {
-      const returnedFromService = Object.assign(
-        {
-          id: 0,
-        },
-        elemDefault
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const role = { ...sampleWithNewData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
-      const expected = Object.assign({}, returnedFromService);
-
-      service.create(new Role()).subscribe(resp => (expectedResult = resp.body));
+      service.create(role).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'POST' });
       req.flush(returnedFromService);
@@ -56,18 +50,11 @@ describe('Role Service', () => {
     });
 
     it('should update a Role', () => {
-      const returnedFromService = Object.assign(
-        {
-          userUuid: 'BBBBBB',
-          id: 1,
-          rolename: 'BBBBBB',
-        },
-        elemDefault
-      );
+      const role = { ...sampleWithRequiredData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
-      const expected = Object.assign({}, returnedFromService);
-
-      service.update(expected).subscribe(resp => (expectedResult = resp.body));
+      service.update(role).subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'PUT' });
       req.flush(returnedFromService);
@@ -75,17 +62,9 @@ describe('Role Service', () => {
     });
 
     it('should partial update a Role', () => {
-      const patchObject = Object.assign(
-        {
-          userUuid: 'BBBBBB',
-          rolename: 'BBBBBB',
-        },
-        new Role()
-      );
-
-      const returnedFromService = Object.assign(patchObject, elemDefault);
-
-      const expected = Object.assign({}, returnedFromService);
+      const patchObject = { ...sampleWithPartialData };
+      const returnedFromService = { ...requireRestSample };
+      const expected = { ...sampleWithRequiredData };
 
       service.partialUpdate(patchObject).subscribe(resp => (expectedResult = resp.body));
 
@@ -95,71 +74,66 @@ describe('Role Service', () => {
     });
 
     it('should return a list of Role', () => {
-      const returnedFromService = Object.assign(
-        {
-          userUuid: 'BBBBBB',
-          id: 1,
-          rolename: 'BBBBBB',
-        },
-        elemDefault
-      );
+      const returnedFromService = { ...requireRestSample };
 
-      const expected = Object.assign({}, returnedFromService);
+      const expected = { ...sampleWithRequiredData };
 
       service.query().subscribe(resp => (expectedResult = resp.body));
 
       const req = httpMock.expectOne({ method: 'GET' });
       req.flush([returnedFromService]);
       httpMock.verify();
-      expect(expectedResult).toContainEqual(expected);
+      expect(expectedResult).toMatchObject([expected]);
     });
 
     it('should delete a Role', () => {
+      const expected = true;
+
       service.delete(123).subscribe(resp => (expectedResult = resp.ok));
 
       const req = httpMock.expectOne({ method: 'DELETE' });
       req.flush({ status: 200 });
-      expect(expectedResult);
+      expect(expectedResult).toBe(expected);
     });
 
     describe('addRoleToCollectionIfMissing', () => {
       it('should add a Role to an empty array', () => {
-        const role: IRole = { id: 123 };
+        const role: IRole = sampleWithRequiredData;
         expectedResult = service.addRoleToCollectionIfMissing([], role);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(role);
       });
 
       it('should not add a Role to an array that contains it', () => {
-        const role: IRole = { id: 123 };
+        const role: IRole = sampleWithRequiredData;
         const roleCollection: IRole[] = [
           {
             ...role,
           },
-          { id: 456 },
+          sampleWithPartialData,
         ];
         expectedResult = service.addRoleToCollectionIfMissing(roleCollection, role);
         expect(expectedResult).toHaveLength(2);
       });
 
       it("should add a Role to an array that doesn't contain it", () => {
-        const role: IRole = { id: 123 };
-        const roleCollection: IRole[] = [{ id: 456 }];
+        const role: IRole = sampleWithRequiredData;
+        const roleCollection: IRole[] = [sampleWithPartialData];
         expectedResult = service.addRoleToCollectionIfMissing(roleCollection, role);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(role);
       });
 
       it('should add only unique Role to an array', () => {
-        const roleArray: IRole[] = [{ id: 123 }, { id: 456 }, { id: 74176 }];
-        const roleCollection: IRole[] = [{ id: 123 }];
+        const roleArray: IRole[] = [sampleWithRequiredData, sampleWithPartialData, sampleWithFullData];
+        const roleCollection: IRole[] = [sampleWithRequiredData];
         expectedResult = service.addRoleToCollectionIfMissing(roleCollection, ...roleArray);
         expect(expectedResult).toHaveLength(3);
       });
 
       it('should accept varargs', () => {
-        const role: IRole = { id: 123 };
-        const role2: IRole = { id: 456 };
+        const role: IRole = sampleWithRequiredData;
+        const role2: IRole = sampleWithPartialData;
         expectedResult = service.addRoleToCollectionIfMissing([], role, role2);
         expect(expectedResult).toHaveLength(2);
         expect(expectedResult).toContain(role);
@@ -167,16 +141,60 @@ describe('Role Service', () => {
       });
 
       it('should accept null and undefined values', () => {
-        const role: IRole = { id: 123 };
+        const role: IRole = sampleWithRequiredData;
         expectedResult = service.addRoleToCollectionIfMissing([], null, role, undefined);
         expect(expectedResult).toHaveLength(1);
         expect(expectedResult).toContain(role);
       });
 
       it('should return initial array if no Role is added', () => {
-        const roleCollection: IRole[] = [{ id: 123 }];
+        const roleCollection: IRole[] = [sampleWithRequiredData];
         expectedResult = service.addRoleToCollectionIfMissing(roleCollection, undefined, null);
         expect(expectedResult).toEqual(roleCollection);
+      });
+    });
+
+    describe('compareRole', () => {
+      it('Should return true if both entities are null', () => {
+        const entity1 = null;
+        const entity2 = null;
+
+        const compareResult = service.compareRole(entity1, entity2);
+
+        expect(compareResult).toEqual(true);
+      });
+
+      it('Should return false if one entity is null', () => {
+        const entity1 = { id: 123 };
+        const entity2 = null;
+
+        const compareResult1 = service.compareRole(entity1, entity2);
+        const compareResult2 = service.compareRole(entity2, entity1);
+
+        expect(compareResult1).toEqual(false);
+        expect(compareResult2).toEqual(false);
+      });
+
+      it('Should return false if primaryKey differs', () => {
+        const entity1 = { id: 123 };
+        const entity2 = { id: 456 };
+
+        const compareResult1 = service.compareRole(entity1, entity2);
+        const compareResult2 = service.compareRole(entity2, entity1);
+
+        expect(compareResult1).toEqual(false);
+        expect(compareResult2).toEqual(false);
+      });
+
+      it('Should return false if primaryKey matches', () => {
+        const entity1 = { id: 123 };
+        const entity2 = { id: 123 };
+
+        const compareResult1 = service.compareRole(entity1, entity2);
+        const compareResult2 = service.compareRole(entity2, entity1);
+
+        expect(compareResult1).toEqual(true);
+        expect(compareResult2).toEqual(true);
       });
     });
   });

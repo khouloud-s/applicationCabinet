@@ -6,8 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, Subject, from } from 'rxjs';
 
+import { AppointementFormService } from './appointement-form.service';
 import { AppointementService } from '../service/appointement.service';
-import { IAppointement, Appointement } from '../appointement.model';
+import { IAppointement } from '../appointement.model';
 import { IMedecin } from 'app/entities/Cabinet/medecin/medecin.model';
 import { MedecinService } from 'app/entities/Cabinet/medecin/service/medecin.service';
 import { IPatient } from 'app/entities/Cabinet/patient/patient.model';
@@ -21,6 +22,7 @@ describe('Appointement Management Update Component', () => {
   let comp: AppointementUpdateComponent;
   let fixture: ComponentFixture<AppointementUpdateComponent>;
   let activatedRoute: ActivatedRoute;
+  let appointementFormService: AppointementFormService;
   let appointementService: AppointementService;
   let medecinService: MedecinService;
   let patientService: PatientService;
@@ -45,6 +47,7 @@ describe('Appointement Management Update Component', () => {
 
     fixture = TestBed.createComponent(AppointementUpdateComponent);
     activatedRoute = TestBed.inject(ActivatedRoute);
+    appointementFormService = TestBed.inject(AppointementFormService);
     appointementService = TestBed.inject(AppointementService);
     medecinService = TestBed.inject(MedecinService);
     patientService = TestBed.inject(PatientService);
@@ -69,7 +72,10 @@ describe('Appointement Management Update Component', () => {
       comp.ngOnInit();
 
       expect(medecinService.query).toHaveBeenCalled();
-      expect(medecinService.addMedecinToCollectionIfMissing).toHaveBeenCalledWith(medecinCollection, ...additionalMedecins);
+      expect(medecinService.addMedecinToCollectionIfMissing).toHaveBeenCalledWith(
+        medecinCollection,
+        ...additionalMedecins.map(expect.objectContaining)
+      );
       expect(comp.medecinsSharedCollection).toEqual(expectedCollection);
     });
 
@@ -88,7 +94,10 @@ describe('Appointement Management Update Component', () => {
       comp.ngOnInit();
 
       expect(patientService.query).toHaveBeenCalled();
-      expect(patientService.addPatientToCollectionIfMissing).toHaveBeenCalledWith(patientCollection, ...additionalPatients);
+      expect(patientService.addPatientToCollectionIfMissing).toHaveBeenCalledWith(
+        patientCollection,
+        ...additionalPatients.map(expect.objectContaining)
+      );
       expect(comp.patientsSharedCollection).toEqual(expectedCollection);
     });
 
@@ -109,7 +118,7 @@ describe('Appointement Management Update Component', () => {
       expect(shiftHoraireService.query).toHaveBeenCalled();
       expect(shiftHoraireService.addShiftHoraireToCollectionIfMissing).toHaveBeenCalledWith(
         shiftHoraireCollection,
-        ...additionalShiftHoraires
+        ...additionalShiftHoraires.map(expect.objectContaining)
       );
       expect(comp.shiftHorairesSharedCollection).toEqual(expectedCollection);
     });
@@ -126,18 +135,19 @@ describe('Appointement Management Update Component', () => {
       activatedRoute.data = of({ appointement });
       comp.ngOnInit();
 
-      expect(comp.editForm.value).toEqual(expect.objectContaining(appointement));
       expect(comp.medecinsSharedCollection).toContain(medecin);
       expect(comp.patientsSharedCollection).toContain(patient);
       expect(comp.shiftHorairesSharedCollection).toContain(shiftHoraire);
+      expect(comp.appointement).toEqual(appointement);
     });
   });
 
   describe('save', () => {
     it('Should call update service on save for existing entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Appointement>>();
+      const saveSubject = new Subject<HttpResponse<IAppointement>>();
       const appointement = { id: 123 };
+      jest.spyOn(appointementFormService, 'getAppointement').mockReturnValue(appointement);
       jest.spyOn(appointementService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
       activatedRoute.data = of({ appointement });
@@ -150,18 +160,20 @@ describe('Appointement Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
+      expect(appointementFormService.getAppointement).toHaveBeenCalled();
       expect(comp.previousState).toHaveBeenCalled();
-      expect(appointementService.update).toHaveBeenCalledWith(appointement);
+      expect(appointementService.update).toHaveBeenCalledWith(expect.objectContaining(appointement));
       expect(comp.isSaving).toEqual(false);
     });
 
     it('Should call create service on save for new entity', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Appointement>>();
-      const appointement = new Appointement();
+      const saveSubject = new Subject<HttpResponse<IAppointement>>();
+      const appointement = { id: 123 };
+      jest.spyOn(appointementFormService, 'getAppointement').mockReturnValue({ id: null });
       jest.spyOn(appointementService, 'create').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
-      activatedRoute.data = of({ appointement });
+      activatedRoute.data = of({ appointement: null });
       comp.ngOnInit();
 
       // WHEN
@@ -171,14 +183,15 @@ describe('Appointement Management Update Component', () => {
       saveSubject.complete();
 
       // THEN
-      expect(appointementService.create).toHaveBeenCalledWith(appointement);
+      expect(appointementFormService.getAppointement).toHaveBeenCalled();
+      expect(appointementService.create).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).toHaveBeenCalled();
     });
 
     it('Should set isSaving to false on error', () => {
       // GIVEN
-      const saveSubject = new Subject<HttpResponse<Appointement>>();
+      const saveSubject = new Subject<HttpResponse<IAppointement>>();
       const appointement = { id: 123 };
       jest.spyOn(appointementService, 'update').mockReturnValue(saveSubject);
       jest.spyOn(comp, 'previousState');
@@ -191,34 +204,40 @@ describe('Appointement Management Update Component', () => {
       saveSubject.error('This is an error!');
 
       // THEN
-      expect(appointementService.update).toHaveBeenCalledWith(appointement);
+      expect(appointementService.update).toHaveBeenCalled();
       expect(comp.isSaving).toEqual(false);
       expect(comp.previousState).not.toHaveBeenCalled();
     });
   });
 
-  describe('Tracking relationships identifiers', () => {
-    describe('trackMedecinById', () => {
-      it('Should return tracked Medecin primary key', () => {
+  describe('Compare relationships', () => {
+    describe('compareMedecin', () => {
+      it('Should forward to medecinService', () => {
         const entity = { id: 123 };
-        const trackResult = comp.trackMedecinById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: 456 };
+        jest.spyOn(medecinService, 'compareMedecin');
+        comp.compareMedecin(entity, entity2);
+        expect(medecinService.compareMedecin).toHaveBeenCalledWith(entity, entity2);
       });
     });
 
-    describe('trackPatientById', () => {
-      it('Should return tracked Patient primary key', () => {
+    describe('comparePatient', () => {
+      it('Should forward to patientService', () => {
         const entity = { id: 123 };
-        const trackResult = comp.trackPatientById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: 456 };
+        jest.spyOn(patientService, 'comparePatient');
+        comp.comparePatient(entity, entity2);
+        expect(patientService.comparePatient).toHaveBeenCalledWith(entity, entity2);
       });
     });
 
-    describe('trackShiftHoraireById', () => {
-      it('Should return tracked ShiftHoraire primary key', () => {
+    describe('compareShiftHoraire', () => {
+      it('Should forward to shiftHoraireService', () => {
         const entity = { id: 123 };
-        const trackResult = comp.trackShiftHoraireById(0, entity);
-        expect(trackResult).toEqual(entity.id);
+        const entity2 = { id: 456 };
+        jest.spyOn(shiftHoraireService, 'compareShiftHoraire');
+        comp.compareShiftHoraire(entity, entity2);
+        expect(shiftHoraireService.compareShiftHoraire).toHaveBeenCalledWith(entity, entity2);
       });
     });
   });

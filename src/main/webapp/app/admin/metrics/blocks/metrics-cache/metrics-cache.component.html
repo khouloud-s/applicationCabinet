@@ -1,18 +1,18 @@
-<h3 id="cacheMetrics">Cache statistics</h3>
+<h3 id="cacheMetrics">Statistiques de cache</h3>
 
 <div class="table-responsive" *ngIf="!updating && cacheMetrics">
   <table class="table table-striped" aria-describedby="cacheMetrics">
     <thead>
       <tr>
-        <th scope="col">Cache name</th>
-        <th scope="col" class="text-end">Cache Hits</th>
-        <th scope="col" class="text-end">Cache Misses</th>
-        <th scope="col" class="text-end">Cache Gets</th>
-        <th scope="col" class="text-end">Cache Puts</th>
-        <th scope="col" class="text-end">Cache Removals</th>
-        <th scope="col" class="text-end">Cache Evictions</th>
-        <th scope="col" class="text-end">Cache Hit %</th>
-        <th scope="col" class="text-end">Cache Miss %</th>
+        <th scope="col">Nom du cache</th>
+        <th scope="col" class="text-end">Données existantes</th>
+        <th scope="col" class="text-end">Données non existantes</th>
+        <th scope="col" class="text-end">Lectures</th>
+        <th scope="col" class="text-end">Écritures</th>
+        <th scope="col" class="text-end">Suppressions</th>
+        <th scope="col" class="text-end">Évictions</th>
+        <th scope="col" class="text-end">% données existantes</th>
+        <th scope="col" class="text-end">% données non existantes</th>
       </tr>
     </thead>
     <tbody>
